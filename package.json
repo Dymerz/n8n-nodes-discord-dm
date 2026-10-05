@@ -51,8 +51,10 @@
     "sqlite3": "^6.0.1",
     "typescript": "5.9.2"
   },
+  "optionalDependencies": {
+    "discord.js": "^14.27.0"
+  },
   "peerDependencies": {
-    "discord.js": "^14.27.0",
     "n8n-workflow": "*"
   }
 }

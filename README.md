@@ -6,9 +6,8 @@ It provides separate triggers for direct messages, added reactions, and removed
 reactions, plus a node for sending a direct message to a user.
 
 This package uses `discord.js` and is intended for self-hosted n8n
-installations where peer dependencies can be installed. The included Compose
-setup installs these dependencies before starting n8n. It is not eligible for
-n8n Cloud community-node loading.
+installations. The package installs its Discord runtime dependency
+automatically. It is not eligible for n8n Cloud community-node loading.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 

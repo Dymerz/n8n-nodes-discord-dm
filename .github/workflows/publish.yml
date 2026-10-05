@@ -117,6 +117,10 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "next_patch=$next_patch" >> "$GITHUB_OUTPUT"
 
+      - name: Set Version in package.json
+        run: |
+          npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+
       - name: Release
         # Publishes to npm with a provenance attestation (requires id-token: write above).
         # Lint and build run automatically as part of the release process.
@@ -127,7 +131,7 @@ jobs:
         #   .npmrc here before publishing.
         run: |
           [ -n "$NPM_TOKEN" ] && npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-          npm run release -- "${{ steps.version.outputs.version }}"
+          npm run release
         env:
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

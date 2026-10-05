@@ -43,6 +43,7 @@ export class DiscordDirectMessage implements INodeType
         {
           return;
         }
+
         this.emit([[{ json: toN8nData(message.toJSON()) }]]);
       },
     );

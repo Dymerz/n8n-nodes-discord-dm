@@ -14,12 +14,13 @@ services:
     ports:
       - "5678:5678"
     environment:
+      CHOKIDAR_USEPOLLING: "true"
       N8N_DEV_RELOAD: "true"
       N8N_CUSTOM_EXTENSIONS: /home/node/.n8n/custom
       N8N_SECURE_COOKIE: "false"
     volumes:
       - n8n_data:/home/node/.n8n
-      - .:/home/node/.n8n/custom/n8n-nodes-discord-triggers
+      - ./dist/nodes:/home/node/.n8n/custom/n8n-nodes-discord-triggers
       - type: volume
         source: node_modules
         target: /home/node/.n8n/custom/n8n-nodes-discord-triggers/node_modules

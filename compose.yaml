@@ -1,12 +1,13 @@
 services:
   n8n:
     image: docker.n8n.io/n8nio/n8n:2.41.7
+    working_dir: /home/node/.n8n/custom/n8n-nodes-discord-triggers
     entrypoint: /bin/sh
     command:
       - -c
       - >-
-        npm install --omit=dev --no-package-lock --ignore-scripts --no-audit
-        --no-fund &&
+        npm install --omit=dev --include=peer --no-package-lock
+        --ignore-scripts --no-audit --no-fund &&
         n8n start
     ports:
       - "5678:5678"

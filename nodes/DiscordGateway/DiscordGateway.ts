@@ -1,4 +1,3 @@
-/* eslint-disable @n8n/community-nodes/no-restricted-imports -- Discord.js provides the typed Gateway client required by this node. */
 import { Client, GatewayIntentBits, Partials, type ClientEvents } from 'discord.js';
 import
 {

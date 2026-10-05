@@ -5,9 +5,10 @@ the Discord Gateway and can send direct messages through the Discord REST API.
 It provides separate triggers for direct messages, added reactions, and removed
 reactions, plus a node for sending a direct message to a user.
 
-This package uses `discord.js` and is intended for self-hosted n8n
-installations. The package installs its Discord runtime dependency
-automatically. It is not eligible for n8n Cloud community-node loading.
+This package uses `discord.js` and bundles it into each node entry during the
+build, so the published package has no runtime dependency that n8n must
+install. It is intended for self-hosted n8n installations and is not eligible
+for n8n Cloud community-node loading.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 
@@ -65,21 +66,21 @@ The project includes a Docker Compose setup for testing the node in an n8n
 instance with development reload enabled. Build the node before starting n8n:
 
 ```shell
-npm install
-npm run build
+pnpm install
+pnpm build
 docker compose up
 ```
 
 Open [http://localhost:5678](http://localhost:5678) and create a workflow. The
 node is loaded from this package's `dist` directory. To rebuild automatically
-while editing, run `npm run build:watch` in a second terminal. Stop the n8n
+while editing, run `pnpm build:watch` in a second terminal. Stop the n8n
 instance with `docker compose down`.
 
 In VS Code, use **Run and Debug → Start n8n development** to start the
 TypeScript watcher and Docker Compose together. Use the **Stop n8n Compose**
 task to stop the container.
 
-The recommended alternative is `npm run dev`, which uses the `n8n-node` tool to
+The recommended alternative is `pnpm dev`, which uses the `n8n-node` tool to
 start n8n and rebuild the node automatically. The Compose setup is intended for
 the documented external-n8n workflow and requires Docker or Podman.
 

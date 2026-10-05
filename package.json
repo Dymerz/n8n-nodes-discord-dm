@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-discord-triggers",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "description": "Discord Gateway trigger nodes for n8n.",
   "license": "MIT",
   "homepage": "https://github.com/Dymerz/n8n-nodes-discord-triggers",
@@ -16,7 +16,7 @@
     "url": "https://github.com/Dymerz/n8n-nodes-discord-triggers.git"
   },
   "scripts": {
-    "build": "n8n-node build",
+    "build": "n8n-node build && node scripts/bundle.mjs",
     "build:watch": "tsc --watch",
     "dev": "n8n-node dev --external-n8n",
     "lint": "n8n-node lint",
@@ -24,6 +24,7 @@
     "release": "n8n-node release",
     "prepublishOnly": "n8n-node prerelease"
   },
+  "packageManager": "pnpm@12.6.0",
   "publishConfig": {
     "access": "public"
   },
@@ -44,7 +45,9 @@
     ]
   },
   "devDependencies": {
-    "@n8n/node-cli": "*",
+    "@n8n/node-cli": "0.50.5",
+    "discord.js": "^14.27.0",
+    "esbuild": "^0.25.0",
     "eslint": "9.32.0",
     "prettier": "3.6.2",
     "release-it": "^19.0.4",

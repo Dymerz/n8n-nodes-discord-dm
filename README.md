@@ -1,8 +1,9 @@
 # n8n-nodes-discord-triggers
 
 This n8n community node starts workflows from Discord bot events delivered over
-the Discord Gateway. It provides separate triggers for direct messages, added
-reactions, and removed reactions.
+the Discord Gateway and can send direct messages through the Discord REST API.
+It provides separate triggers for direct messages, added reactions, and removed
+reactions, plus a node for sending a direct message to a user.
 
 This package uses `discord.js` and is intended for self-hosted n8n
 installations where peer dependencies can be installed. The included Compose
@@ -11,7 +12,7 @@ n8n Cloud community-node loading.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 
-[Installation](#installation) · [Triggers](#triggers) · [Credentials](#credentials) · [Local development](#local-development) · [Usage](#usage) · [Resources](#resources)
+[Installation](#installation) · [Triggers](#triggers) · [Actions](#actions) · [Credentials](#credentials) · [Local development](#local-development) · [Usage](#usage) · [Resources](#resources)
 
 ## Installation
 
@@ -28,6 +29,15 @@ Follow the [community node installation guide](https://docs.n8n.io/integrations/
 
 Each trigger emits the complete Discord Gateway event data as one n8n item.
 
+## Actions
+
+* **Discord Send Direct Message** — creates or opens a direct-message channel
+  with a Discord user and sends a message to it.
+
+The action accepts a Discord user ID and message content. It returns the
+message object returned by Discord. The bot must be able to message the target
+user, and Discord limits message content to 2,000 characters.
+
 ## Credentials
 
 Create a Discord application and bot in the [Discord Developer
@@ -35,10 +45,11 @@ Portal](https://discord.com/developers/applications), copy the bot token, and
 save it in an n8n **Discord Bot API** credential. The token is stored as a
 password field and is used only for the Gateway connection.
 
-These triggers do not request privileged intents. The bot must be installed in
+The triggers do not request privileged intents. The bot must be installed in
 the servers where reactions should be observed and have permission to view the
 relevant channels and read message history. Direct messages require the bot to
-share a DM conversation with the user.
+share a DM conversation with the user. The send-direct-message action uses the
+same bot credential with Discord's REST API.
 
 Do not share or commit the bot token. Discord may invalidate exposed tokens.
 
@@ -73,10 +84,11 @@ the documented external-n8n workflow and requires Docker or Podman.
 
 ## Usage
 
-Add one of the trigger nodes to a workflow, select a Discord Bot API
-credential, activate the workflow, and send a DM or add/remove a reaction to
-test it. The workflow must remain active while Discord Gateway events are being
-received.
+Add a trigger or the **Discord Send Direct Message** node to a workflow and
+select a Discord Bot API credential. For the action, provide the recipient's
+Discord user ID and message content. For a trigger, activate the workflow and
+send a DM or add/remove a reaction to test it. The workflow must remain active
+while Discord Gateway events are being received.
 
 Discord may deliver reconnects and duplicate events. Workflows that perform
 non-idempotent actions should use Discord event or message identifiers to

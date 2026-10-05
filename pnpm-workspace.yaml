@@ -1,17 +1,17 @@
 allowBuilds:
-  cpu-features: set this to true or false
+  cpu-features: true
   esbuild: true
-  eslint-plugin-n8n-nodes-base: set this to true or false
-  isolated-vm: set this to true or false
-  sqlite3: set this to true or false
-  ssh2: set this to true or false
-  unrs-resolver: set this to true or false
+  eslint-plugin-n8n-nodes-base: true
+  isolated-vm: true
+  sqlite3: true
+  ssh2: true
+  unrs-resolver: true
 minimumReleaseAgeExclude:
-  - '@n8n/ai-node-sdk@0.31.5'
-  - '@n8n/ai-utilities@0.34.5'
-  - '@n8n/api-types@1.41.4'
-  - '@n8n/backend-common@1.41.5'
-  - '@n8n/backend-network@1.15.5'
-  - '@n8n/decorators@1.41.4'
-  - '@n8n/node-cli@0.50.5'
-  - '@n8n/permissions@0.78.1'
+  - "@n8n/ai-node-sdk@0.31.5"
+  - "@n8n/ai-utilities@0.34.5"
+  - "@n8n/api-types@1.41.4"
+  - "@n8n/backend-common@1.41.5"
+  - "@n8n/backend-network@1.15.5"
+  - "@n8n/decorators@1.41.4"
+  - "@n8n/node-cli@0.50.5"
+  - "@n8n/permissions@0.78.1"

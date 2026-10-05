@@ -21,7 +21,8 @@ Follow the [community node installation guide](https://docs.n8n.io/integrations/
 
 * **Discord Direct Message Trigger** — emits raw `MESSAGE_CREATE` payloads
   received in direct-message or group-direct-message channels, excluding
-  messages sent by bots.
+  messages sent by bots. It also sends Discord's typing indicator before
+  emitting each message.
 * **Discord Reaction Added Trigger** — emits raw `MESSAGE_REACTION_ADD`
   payloads.
 * **Discord Reaction Removed Trigger** — emits raw `MESSAGE_REACTION_REMOVE`

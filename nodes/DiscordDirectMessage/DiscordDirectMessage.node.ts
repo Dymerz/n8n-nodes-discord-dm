@@ -32,7 +32,7 @@ export class DiscordDirectMessage implements INodeType
       this,
       [DISCORD_INTENTS.DIRECT_MESSAGES],
       'messageCreate',
-      (message) =>
+      async (message) =>
       {
         if (!message.channel.isDMBased())
         {
@@ -42,6 +42,14 @@ export class DiscordDirectMessage implements INodeType
         if (message.author.bot)
         {
           return;
+        }
+
+        try
+        {
+          await message.channel.sendTyping();
+        } catch (error)
+        {
+          this.emitError(error instanceof Error ? error : new Error(String(error)));
         }
 
         this.emit([[{ json: toN8nData(message.toJSON()) }]]);

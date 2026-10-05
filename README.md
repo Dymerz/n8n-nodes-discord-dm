@@ -1,46 +1,68 @@
 # n8n-nodes-discord-triggers
 
-This is an n8n community node. It lets you use _app/service name_ in your n8n workflows.
+This n8n community node starts workflows from Discord bot events delivered over
+the Discord Gateway. It provides separate triggers for direct messages, added
+reactions, and removed reactions.
 
-_App/service name_ is _one or two sentences describing the service this node integrates with_.
+This package uses `discord.js` and is intended for self-hosted n8n
+installations where peer dependencies can be installed. It is not eligible for
+n8n Cloud community-node loading.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 
-[Installation](#installation)
-[Operations](#operations)
-[Credentials](#credentials)
-[Compatibility](#compatibility)
-[Usage](#usage)
-[Resources](#resources)
-[Version history](#version-history)
+[Installation](#installation) · [Triggers](#triggers) · [Credentials](#credentials) · [Usage](#usage) · [Resources](#resources)
 
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+Follow the [community node installation guide](https://docs.n8n.io/integrations/community-nodes/installation/).
 
-## Operations
+## Triggers
 
-_List the operations supported by your node._
+* **Discord Direct Message Trigger** — emits raw `MESSAGE_CREATE` payloads
+  received in direct-message or group-direct-message channels.
+* **Discord Reaction Added Trigger** — emits raw `MESSAGE_REACTION_ADD`
+  payloads.
+* **Discord Reaction Removed Trigger** — emits raw `MESSAGE_REACTION_REMOVE`
+  payloads.
+
+Each trigger emits the complete Discord Gateway event data as one n8n item.
 
 ## Credentials
 
-_If users need to authenticate with the app/service, provide details here. You should include prerequisites (such as signing up with the service), available authentication methods, and how to set them up._
+Create a Discord application and bot in the [Discord Developer
+Portal](https://discord.com/developers/applications), copy the bot token, and
+save it in an n8n **Discord Bot API** credential. The token is stored as a
+password field and is used only for the Gateway connection.
+
+These triggers do not request privileged intents. The bot must be installed in
+the servers where reactions should be observed and have permission to view the
+relevant channels and read message history. Direct messages require the bot to
+share a DM conversation with the user.
+
+Do not share or commit the bot token. Discord may invalidate exposed tokens.
 
 ## Compatibility
 
-_State the minimum n8n version, as well as which versions you test against. You can also include any known version incompatibility issues._
+The node uses the n8n community-node package format. Discord Gateway
+availability and bot permissions are controlled by Discord.
 
 ## Usage
 
-_This is an optional section. Use it to help users with any difficult or confusing aspects of the node._
+Add one of the trigger nodes to a workflow, select a Discord Bot API
+credential, activate the workflow, and send a DM or add/remove a reaction to
+test it. The workflow must remain active while Discord Gateway events are being
+received.
 
-_By the time users are looking for community nodes, they probably already know n8n basics. But if you expect new users, you can link to the [Try it out](https://docs.n8n.io/try-it-out/) documentation to help them get started._
+Discord may deliver reconnects and duplicate events. Workflows that perform
+non-idempotent actions should use Discord event or message identifiers to
+deduplicate as needed.
 
 ## Resources
 
-* [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* _Link to app/service documentation._
+* [n8n community node documentation](https://docs.n8n.io/integrations/#community-nodes)
+* [Discord Gateway documentation](https://discord.com/developers/docs/topics/gateway)
+* [Discord bot permissions](https://discord.com/developers/docs/topics/permissions)
 
 ## Version history
 
-_This is another optional section. If your node has multiple versions, include a short description of available versions and what changed, as well as any compatibility impact._
+* `0.1.0` — Added Discord direct message and reaction triggers.

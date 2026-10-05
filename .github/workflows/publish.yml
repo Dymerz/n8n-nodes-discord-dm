@@ -127,7 +127,7 @@ jobs:
         #   .npmrc here before publishing.
         run: |
           [ -n "$NPM_TOKEN" ] && npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-          npm run release -- --ci "${{ steps.version.outputs.version }}"
+          npm run release -- "${{ steps.version.outputs.version }}"
         env:
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

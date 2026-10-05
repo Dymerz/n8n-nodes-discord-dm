@@ -43,9 +43,6 @@
       "dist/nodes/DiscordReactionRemoved/DiscordReactionRemoved.node.js"
     ]
   },
-  "dependencies": {
-    "discord.js": "^14.27.0"
-  },
   "devDependencies": {
     "@n8n/node-cli": "*",
     "eslint": "9.32.0",
@@ -55,6 +52,7 @@
     "typescript": "5.9.2"
   },
   "peerDependencies": {
-    "n8n-workflow": "*"
+    "n8n-workflow": "*",
+    "discord.js": "^14.27.0"
   }
 }

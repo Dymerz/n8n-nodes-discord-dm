@@ -36,7 +36,12 @@ export class DiscordDirectMessage implements INodeType
       {
         if (!message.channel.isDMBased())
         {
-        	return;
+          return;
+        }
+
+        if (message.author.bot)
+        {
+          return;
         }
         this.emit([[{ json: toN8nData(message.toJSON()) }]]);
       },

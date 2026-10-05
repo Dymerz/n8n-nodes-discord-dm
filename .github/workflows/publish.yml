@@ -9,7 +9,7 @@
 # ─── PREREQUISITES ─────────────────────────────────────────────────────────────
 #
 # @n8n/node-cli ≥ 0.23.0 is required. Earlier versions do not support the
-# provenance flag passed by `npm run release` in CI, and the publish step will
+# provenance flag passed by `pnpm release` in CI, and the publish step will
 # fail. Check the version installed in this project with:
 #
 #   npm list @n8n/node-cli
@@ -42,7 +42,7 @@
 #
 # Run the following command locally to start an interactive release:
 #
-#   npm run release
+#   pnpm release
 #
 # This will lint, build, prompt for a version bump, update the changelog,
 # commit, tag, and push — which triggers this workflow to publish to npm.
@@ -74,19 +74,24 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12.6.0
+
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "lts/*"
-          cache: "npm"
+          cache: "pnpm"
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
-        run: "npm ci"
+        run: "pnpm install --frozen-lockfile"
 
       - name: Calculate release version from tags
         id: version
@@ -128,12 +133,12 @@ jobs:
 
       - name: Set Version in package.json
         run: |
-          npm version ${{ steps.version.outputs.version }} --no-git-tag-version --allow-same-version
+          pnpm version ${{ steps.version.outputs.version }} --no-git-tag-version --allow-same-version
 
       - name: Release
         run: |
           [ -n "$NPM_TOKEN" ] && npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-          npm run release
+          pnpm release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 

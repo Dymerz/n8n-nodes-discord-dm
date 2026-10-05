@@ -20,7 +20,7 @@ services:
       N8N_SECURE_COOKIE: "false"
     volumes:
       - n8n_data:/home/node/.n8n
-      - ./dist/nodes:/home/node/.n8n/custom/n8n-nodes-discord-triggers
+      - .:/home/node/.n8n/custom/n8n-nodes-discord-triggers
       - type: volume
         source: node_modules
         target: /home/node/.n8n/custom/n8n-nodes-discord-triggers/node_modules

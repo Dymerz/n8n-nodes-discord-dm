@@ -11,7 +11,7 @@
     {
       "label": "Start node watch",
       "type": "npm",
-      "script": "dev",
+      "script": "c",
       "isBackground": true,
       "problemMatcher": {
         "owner": "typescript",

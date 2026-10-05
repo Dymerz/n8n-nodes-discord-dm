@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "n8n-node build && node scripts/bundle.mjs",
-    "build:watch": "tsc --watch",
+    "build:watch": "node scripts/watch.mjs",
     "dev": "n8n-node dev --external-n8n",
     "lint": "n8n-node lint",
     "lint:fix": "n8n-node lint --fix",
@@ -35,7 +35,8 @@
     "n8nNodesApiVersion": 1,
     "strict": false,
     "credentials": [
-      "dist/credentials/DiscordBotApi.credentials.js"
+      "dist/credentials/DiscordBotApi.credentials.js",
+      "dist/credentials/DiscordBotProductionApi.credentials.js"
     ],
     "nodes": [
       "dist/nodes/DiscordDirectMessage/DiscordDirectMessage.node.js",

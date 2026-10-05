@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-discord-triggers",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Discord Gateway trigger nodes for n8n.",
   "license": "MIT",
   "homepage": "https://github.com/Dymerz/n8n-nodes-discord-triggers",

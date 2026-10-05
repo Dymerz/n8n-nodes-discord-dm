@@ -44,12 +44,13 @@ user, and Discord limits message content to 2,000 characters.
 
 Create a Discord application and bot in the [Discord Developer
 Portal](https://discord.com/developers/applications), copy the bot token, and
-save it in an n8n **Discord Bot API** credential. For each trigger, configure
-both credentials: **Discord Bot API** is used while testing a workflow in the
-editor, and **Discord Bot Production API** is used when the workflow is
+save it in an n8n **Discord Bot API** credential. Enter the debug bot token in
+**Bot Token** and, when needed, a separate production bot token in
+**Production Bot Token**. Triggers automatically use the debug token while
+testing a workflow in the editor and the production token when the workflow is
 active or otherwise runs outside manual mode. This lets debug and published
-workflows use different Discord bots or tokens. The token is stored as a
-password field and is used only for the Gateway connection.
+workflows use different Discord bots or tokens. Both values are stored as
+password fields.
 
 The triggers do not request privileged intents. The bot must be installed in
 the servers where reactions should be observed and have permission to view the

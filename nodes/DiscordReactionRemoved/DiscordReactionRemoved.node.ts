@@ -22,10 +22,6 @@ export class DiscordReactionRemoved implements INodeType
         name: 'discordBotApi',
         required: true,
       },
-      {
-        name: 'discordBotProductionApi',
-        required: true,
-      },
     ],
     properties: [],
   };

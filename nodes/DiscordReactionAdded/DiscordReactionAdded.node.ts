@@ -22,10 +22,6 @@ export class DiscordReactionAdded implements INodeType
         name: 'discordBotApi',
         required: true,
       },
-      {
-        name: 'discordBotProductionApi',
-        required: true,
-      },
     ],
     properties: [],
   };

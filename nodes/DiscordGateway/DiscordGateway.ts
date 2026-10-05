@@ -28,13 +28,13 @@ export const createDiscordTrigger = async <TEventName extends DiscordEventName>(
 ): Promise<ITriggerResponse> =>
 {
   const credentialName = context.getMode() === 'manual'
-    ? 'discordBotApi'
-    : 'discordBotProductionApi';
-  const credentials = await context.getCredentials(credentialName);
-  const token = credentials.botToken;
+    ? 'botToken'
+    : 'productionBotToken';
+  const credentials = await context.getCredentials('discordBotApi');
+  const token = credentials[credentialName];
   if (typeof token !== 'string' || token.length === 0)
   {
-    throw new Error('Discord bot token is missing from the configured credential.');
+    throw new Error(`The ${context.getMode() === 'manual' ? 'debug' : 'production'} Discord bot token is missing from the configured credential.`);
   }
 
   const client = new Client({

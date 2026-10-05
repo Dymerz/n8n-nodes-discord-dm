@@ -24,6 +24,16 @@ export class DiscordBotApi implements ICredentialType
       required: true,
       description: 'The token for the Discord bot application.',
     },
+    {
+      displayName: 'Production Bot Token',
+      name: 'productionBotToken',
+      type: 'string',
+      typeOptions: {
+        password: true,
+      },
+      default: '',
+      description: 'The token used when the workflow is active or runs outside manual mode.',
+    },
   ];
 
   authenticate: IAuthenticateGeneric = {

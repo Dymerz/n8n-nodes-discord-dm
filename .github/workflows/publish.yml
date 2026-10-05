@@ -146,4 +146,9 @@ jobs:
         env:
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
         run: |
-          git push origin "$RELEASE_TAG"
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          if ! git show-ref --tags --verify --quiet "refs/tags/$RELEASE_TAG"; then
+            git tag --annotate "$RELEASE_TAG" --message "Release $RELEASE_TAG"
+          fi
+          git push origin "refs/tags/$RELEASE_TAG"

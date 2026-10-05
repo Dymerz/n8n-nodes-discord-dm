@@ -1,4 +1,5 @@
-# Publishes this n8n community node package to npm on every version tag push.
+# Publishes this n8n community node package to npm when changes are pushed to
+# main. Pull requests targeting main start the workflow but never publish.
 #
 # Starting May 1 2026, n8n requires all community nodes to be published via
 # GitHub Actions with npm provenance statements. This workflow satisfies that
@@ -37,12 +38,6 @@
 # Both options work with --provenance. Provenance is signed by GitHub's OIDC
 # infrastructure regardless of how npm authentication is handled.
 #
-# ─── TAG CONVENTION ────────────────────────────────────────────────────────────
-#
-# This workflow triggers on tags matching "*.*.*" (e.g. 0.2.0).
-# If you prefer tags with a "v" prefix (e.g. v0.2.0), change the filter to:
-#   tags: ['v*.*.*']
-#
 # ─── RELEASE PROCESS ───────────────────────────────────────────────────────────
 #
 # Run the following command locally to start an interactive release:
@@ -56,10 +51,11 @@ name: Publish
 
 on:
   push:
-    tags:
-      # Matches 0.1.0, 1.2.3, 2.0.0-rc.1, etc.
-      # See "TAG CONVENTION" above if you prefer tags with a "v" prefix.
-      - '*.*.*'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   publish:
@@ -69,17 +65,25 @@ jobs:
     permissions:
       # Required to mint an OIDC token for npm provenance attestation.
       id-token: write
-      # Scoped down from the default (write) for least-privilege publishing.
-      contents: read
+      # Required by release-it to create the version tag and GitHub release.
+      contents: write
+      # Required when release-it reads pull request metadata for the release.
+      pull-requests: read
+
+    # Never publish, tag, or create a release from an untrusted pull request.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: 'npm ci'
@@ -96,4 +100,5 @@ jobs:
           [ -n "$NPM_TOKEN" ] && npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
           npm run release
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

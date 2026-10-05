@@ -10,7 +10,7 @@ n8n Cloud community-node loading.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 
-[Installation](#installation) · [Triggers](#triggers) · [Credentials](#credentials) · [Usage](#usage) · [Resources](#resources)
+[Installation](#installation) · [Triggers](#triggers) · [Credentials](#credentials) · [Local development](#local-development) · [Usage](#usage) · [Resources](#resources)
 
 ## Installation
 
@@ -45,6 +45,30 @@ Do not share or commit the bot token. Discord may invalidate exposed tokens.
 
 The node uses the n8n community-node package format. Discord Gateway
 availability and bot permissions are controlled by Discord.
+
+## Local development
+
+The project includes a Docker Compose setup for testing the node in an n8n
+instance with development reload enabled. Build the node before starting n8n:
+
+```shell
+npm install
+npm run build
+docker compose up
+```
+
+Open [http://localhost:5678](http://localhost:5678) and create a workflow. The
+node is loaded from this package's `dist` directory. To rebuild automatically
+while editing, run `npm run build:watch` in a second terminal. Stop the n8n
+instance with `docker compose down`.
+
+In VS Code, use **Run and Debug → Start n8n development** to start the
+TypeScript watcher and Docker Compose together. Use the **Stop n8n Compose**
+task to stop the container.
+
+The recommended alternative is `npm run dev`, which uses the `n8n-node` tool to
+start n8n and rebuild the node automatically. The Compose setup is intended for
+the documented external-n8n workflow and requires Docker or Podman.
 
 ## Usage
 

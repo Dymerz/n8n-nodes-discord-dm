@@ -1,12 +1,13 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Attach to running n8n",
-			"processId": "${command:PickProcess}",
-			"request": "attach",
-			"skipFiles": ["<node_internals>/**"],
-			"type": "node"
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Start n8n development",
+      "request": "launch",
+      "type": "node-terminal",
+      "command": "docker compose up",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Start node watch"
+    }
+  ]
 }

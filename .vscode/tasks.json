@@ -1,0 +1,65 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build node",
+      "type": "npm",
+      "script": "build",
+      "problemMatcher": "$tsc",
+      "group": "build"
+    },
+    {
+      "label": "Start node watch",
+      "type": "npm",
+      "script": "dev",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "fileLocation": "relative",
+        "pattern": {
+          "regexp": "^(.*)\\((\\d+),(\\d+)\\):\\s+(error|warning)\\s+(TS\\d+):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^Starting compilation in watch mode",
+          "endsPattern": "^(Found \\d+ errors?\\. Watching for file changes\\.|Found 0 errors\\. Watching for file changes\\.)$"
+        }
+      },
+      "group": "build"
+    },
+    {
+      "label": "Start n8n Compose",
+      "type": "shell",
+      "command": "docker compose up",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "n8n",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*$",
+          "endsPattern": "^.*n8n ready on.*$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": false
+      }
+    },
+    {
+      "label": "Stop n8n Compose",
+      "type": "shell",
+      "command": "docker compose down",
+      "problemMatcher": []
+    }
+  ]
+}

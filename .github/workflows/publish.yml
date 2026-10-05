@@ -36,6 +36,11 @@
 #   The workflow keeps the major and minor values unchanged and increments
 #   VERSION_PATCH after each successful release.
 #
+#   Updating repository variables requires a separate fine-grained token because
+#   GITHUB_TOKEN is not accepted by the repository variables API in this
+#   workflow. Create a token with repository access and "Variables: Read and
+#   write" permission, then save it as the GH_VARIABLES_TOKEN repository secret.
+#
 # Option B — npm Automation Token (fallback):
 #   1. On npmjs.com: Access Tokens → Generate New Token → Granular Access Token.
 #      Scope it to this package with "Read and write" publish permission.
@@ -76,8 +81,6 @@ jobs:
       contents: write
       # Required when release-it reads pull request metadata for the release.
       pull-requests: read
-      # Required to update VERSION_PATCH through the Actions variables API.
-      actions: write
 
     # Never publish, tag, or create a release from an untrusted pull request.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -119,7 +122,7 @@ jobs:
 
       - name: Set Version in package.json
         run: |
-          npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+          npm version ${{ steps.version.outputs.version }} --no-git-tag-version --allow-same-version
 
       - name: Release
         # Publishes to npm with a provenance attestation (requires id-token: write above).
@@ -138,7 +141,7 @@ jobs:
 
       - name: Update patch version variable
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_VARIABLES_TOKEN }}
           NEXT_PATCH: ${{ steps.version.outputs.next_patch }}
         run: |
           gh api \

@@ -29,18 +29,6 @@
 #   4. Leave the NPM_TOKEN secret unset in this repository. GitHub's OIDC
 #      token is used instead — no secret ever touches your repo settings.
 #
-# VERSION VARIABLES:
-#   Create these repository variables under Settings → Secrets and variables →
-#   Actions → Variables:
-#     VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH
-#   The workflow keeps the major and minor values unchanged and increments
-#   VERSION_PATCH after each successful release.
-#
-#   Updating repository variables requires a separate fine-grained token because
-#   GITHUB_TOKEN is not accepted by the repository variables API in this
-#   workflow. Create a token with repository access and "Variables: Read and
-#   write" permission, then save it as the GH_VARIABLES_TOKEN repository secret.
-#
 # Option B — npm Automation Token (fallback):
 #   1. On npmjs.com: Access Tokens → Generate New Token → Granular Access Token.
 #      Scope it to this package with "Read and write" publish permission.
@@ -100,25 +88,43 @@ jobs:
       - name: Install dependencies
         run: "npm ci"
 
-      - name: Calculate release version
+      - name: Calculate release version from tags
         id: version
         shell: bash
-        env:
-          VERSION_MAJOR: ${{ vars.VERSION_MAJOR }}
-          VERSION_MINOR: ${{ vars.VERSION_MINOR }}
-          VERSION_PATCH: ${{ vars.VERSION_PATCH }}
         run: |
-          for value in "$VERSION_MAJOR" "$VERSION_MINOR" "$VERSION_PATCH"; do
-            if [[ ! "$value" =~ ^[0-9]+$ ]]; then
-              echo "::error::VERSION_MAJOR, VERSION_MINOR, and VERSION_PATCH must be non-negative integers."
+          git fetch --tags origin
+
+          prefix="v"
+          current_version=$(node -p "require('./package.json').version")
+          if [[ ! "$current_version" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "::error::package.json must contain a semantic version."
+            exit 1
+          fi
+
+          major="${BASH_REMATCH[1]}"
+          minor="${BASH_REMATCH[2]}"
+          current_patch="${BASH_REMATCH[3]}"
+          tag_pattern="${prefix}${major}.${minor}.*"
+          matching_tag=$(git tag --list "$tag_pattern" --sort=-v:refname | head -n 1)
+
+          if [[ -n "$matching_tag" ]]; then
+            version_without_prefix="${matching_tag#"$prefix"}"
+            IFS='.' read -r _ _ patch <<< "$version_without_prefix"
+            if [[ ! "$patch" =~ ^[0-9]+$ ]]; then
+              echo "::error::Latest matching tag is not a semantic version: $matching_tag"
               exit 1
             fi
-          done
+            new_patch=$((patch + 1))
+          else
+            # Bootstrap from package.json when the repository has no tags yet.
+            new_patch=$((current_patch + 1))
+          fi
 
-          next_patch=$((VERSION_PATCH + 1))
-          version="$VERSION_MAJOR.$VERSION_MINOR.$next_patch"
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "next_patch=$next_patch" >> "$GITHUB_OUTPUT"
+          version_without_prefix="$major.$minor.$new_patch"
+          tag="$prefix$version_without_prefix"
+          echo "version=$version_without_prefix" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Using release tag: $tag"
 
       - name: Set Version in package.json
         run: |
@@ -134,18 +140,12 @@ jobs:
         #   .npmrc here before publishing.
         run: |
           [ -n "$NPM_TOKEN" ] && npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-          npm run release
+          npm run release -- "${{ steps.version.outputs.version }}"
         env:
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Update patch version variable
+      - name: Push release tag
         env:
-          GH_TOKEN: ${{ secrets.GH_VARIABLES_TOKEN }}
-          NEXT_PATCH: ${{ steps.version.outputs.next_patch }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
         run: |
-          gh api \
-            --method PATCH \
-            "/repos/${GITHUB_REPOSITORY}/actions/variables/VERSION_PATCH" \
-            --field name=VERSION_PATCH \
-            --field value="$NEXT_PATCH"
+          git push origin "$RELEASE_TAG"

@@ -29,6 +29,13 @@
 #   4. Leave the NPM_TOKEN secret unset in this repository. GitHub's OIDC
 #      token is used instead — no secret ever touches your repo settings.
 #
+# VERSION VARIABLES:
+#   Create these repository variables under Settings → Secrets and variables →
+#   Actions → Variables:
+#     VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH
+#   The workflow keeps the major and minor values unchanged and increments
+#   VERSION_PATCH after each successful release.
+#
 # Option B — npm Automation Token (fallback):
 #   1. On npmjs.com: Access Tokens → Generate New Token → Granular Access Token.
 #      Scope it to this package with "Read and write" publish permission.
@@ -69,6 +76,8 @@ jobs:
       contents: write
       # Required when release-it reads pull request metadata for the release.
       pull-requests: read
+      # Required to update VERSION_PATCH through the Actions variables API.
+      actions: write
 
     # Never publish, tag, or create a release from an untrusted pull request.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -88,6 +97,26 @@ jobs:
       - name: Install dependencies
         run: 'npm ci'
 
+      - name: Calculate release version
+        id: version
+        shell: bash
+        env:
+          VERSION_MAJOR: ${{ vars.VERSION_MAJOR }}
+          VERSION_MINOR: ${{ vars.VERSION_MINOR }}
+          VERSION_PATCH: ${{ vars.VERSION_PATCH }}
+        run: |
+          for value in "$VERSION_MAJOR" "$VERSION_MINOR" "$VERSION_PATCH"; do
+            if [[ ! "$value" =~ ^[0-9]+$ ]]; then
+              echo "::error::VERSION_MAJOR, VERSION_MINOR, and VERSION_PATCH must be non-negative integers."
+              exit 1
+            fi
+          done
+
+          next_patch=$((VERSION_PATCH + 1))
+          version="$VERSION_MAJOR.$VERSION_MINOR.$next_patch"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "next_patch=$next_patch" >> "$GITHUB_OUTPUT"
+
       - name: Release
         # Publishes to npm with a provenance attestation (requires id-token: write above).
         # Lint and build run automatically as part of the release process.
@@ -98,7 +127,18 @@ jobs:
         #   .npmrc here before publishing.
         run: |
           [ -n "$NPM_TOKEN" ] && npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-          npm run release
+          npm run release -- --ci "${{ steps.version.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Update patch version variable
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXT_PATCH: ${{ steps.version.outputs.next_patch }}
+        run: |
+          gh api \
+            --method PATCH \
+            "/repos/${GITHUB_REPOSITORY}/actions/variables/VERSION_PATCH" \
+            --field name=VERSION_PATCH \
+            --field value="$NEXT_PATCH"

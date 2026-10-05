@@ -1,9 +1,9 @@
 {
-  "name": "n8n-nodes-discord-triggers",
+  "name": "n8n-nodes-discord-dm",
   "version": "0.1.4",
   "description": "Discord Gateway trigger nodes for n8n.",
   "license": "MIT",
-  "homepage": "https://github.com/Dymerz/n8n-nodes-discord-triggers",
+  "homepage": "https://github.com/Dymerz/n8n-nodes-discord-dm",
   "keywords": [
     "n8n-community-node-package"
   ],
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Dymerz/n8n-nodes-discord-triggers.git"
+    "url": "https://github.com/Dymerz/n8n-nodes-discord-dm.git"
   },
   "scripts": {
     "build": "n8n-node build && node scripts/bundle.mjs",

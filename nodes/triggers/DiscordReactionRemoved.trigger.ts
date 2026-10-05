@@ -1,19 +1,19 @@
 import type { INodeType, INodeTypeDescription, ITriggerFunctions } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
-import { createDiscordTrigger, DISCORD_INTENTS, toN8nData } from '../DiscordGateway/DiscordGateway';
+import { createDiscordTrigger, DISCORD_INTENTS, toN8nData } from './DiscordGateway';
 
-export class DiscordReactionAdded implements INodeType
+export class DiscordReactionRemoved implements INodeType
 {
   description: INodeTypeDescription = {
-    displayName: 'Discord Reaction Added Trigger',
-    name: 'discordReactionAdded',
+    displayName: 'Discord Reaction Removed Trigger',
+    name: 'discordReactionRemoved',
     icon: { light: 'file:../discord.svg', dark: 'file:../discord.svg' },
     group: ['trigger'],
     version: 1,
-    subtitle: 'Listen for added reactions',
-    description: 'Starts a workflow when a reaction is added to a Discord message.',
+    subtitle: 'Listen for removed reactions',
+    description: 'Starts a workflow when a reaction is removed from a Discord message.',
     defaults: {
-      name: 'Discord Reaction Added Trigger',
+      name: 'Discord Reaction Removed Trigger',
     },
     inputs: [],
     outputs: [NodeConnectionTypes.Main],
@@ -34,7 +34,7 @@ export class DiscordReactionAdded implements INodeType
         DISCORD_INTENTS.DIRECT_MESSAGE_REACTIONS,
         DISCORD_INTENTS.GUILD_MESSAGE_REACTIONS,
       ],
-      'messageReactionAdd',
+      'messageReactionRemove',
       (reaction, user) =>
       {
         this.emit([[

@@ -28,8 +28,9 @@ When asked to build or update a node in this project, follow these steps:
    - Confirm the plan, if you are not given one and are generating it
    - **Never start coding without a plan**
 4. Implement. Create or update:
-   - The node files (`nodes/<n>/<n>.node.ts`)
-   - The credentials files (`credentials/<n>.credentials.ts`)
+   - The node files (`nodes/actions/<n>.node.ts` and
+     `nodes/triggers/<n>.trigger.ts`)
+   - The credential files (`nodes/credentials/<n>.credentials.ts`)
    - Other files with helpers and extracted functions/classes
    - `package.json` (`n8n.nodes` and `n8n.credentials` entries)
 5. Quality checks:

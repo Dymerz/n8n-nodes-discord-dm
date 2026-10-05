@@ -31,19 +31,19 @@ be approved
   WordPress.
 
 ## Project structure
-There are two main folders in this project:
-- `nodes` contains all of the nodes in a package (there can be more than 1).
-  The code for each node usually lives in its own folder
-- `credentials` contains all of the credentials in a package. Usually it's just
-  a single file for every credential
+The `nodes` folder contains all nodes and credentials in this package,
+categorized into `actions`, `triggers`, and `credentials`. Each entity uses a
+filename suffix that identifies its type: `.node.ts`, `.trigger.ts`, or
+`.credentials.ts`.
 So it looks something like this:
 .
 ├── nodes/
-│   └── Example/
-│       ├── Example.node.ts
-│       └── ...
-├── credentials/
-│   └── Example.credentials.ts
+│   ├── actions/
+│   │   └── Example.node.ts
+│   ├── triggers/
+│   │   └── Example.trigger.ts
+│   └── credentials/
+│       └── ExampleApi.credentials.ts
 ├── package.json
 └── ...
 It's important to note that `package.json` has a special field `n8n` that have
@@ -56,7 +56,7 @@ information about nodes and credentials in a package:
     "n8nNodesApiVersion": 1,
     "strict": true,
     "credentials": [
-        "dist/credentials/Example.credentials.js"
+        "dist/nodes/ExampleApi/ExampleApi.credentials.js"
     ],
     "nodes": [
       "dist/nodes/Example/Example.node.js"
@@ -89,7 +89,7 @@ Load these before working on the relevant area:
 | Any node file in `nodes/`            | `.agents/nodes.md` and `.agents/properties.md`                      |
 | A declarative-style node             | above + `.agents/nodes-declarative.md`                              |
 | A programmatic-style node            | above + `.agents/nodes-programmatic.md`                             |
-| Files in `credentials/`              | `.agents/credentials.md`                                            |
+| Files in `nodes/credentials/`        | `.agents/credentials.md`                                            |
 | Adding a new version to a node       | `.agents/versioning.md`                                             |
 | Starting a new task or planning      | `.agents/workflow.md`                                               |
 

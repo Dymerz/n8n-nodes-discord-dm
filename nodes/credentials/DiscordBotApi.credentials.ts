@@ -10,7 +10,7 @@ export class DiscordBotApi implements ICredentialType
   name = 'discordBotApi';
   displayName = 'Discord Bot API';
   documentationUrl = 'https://discord.com/developers/docs/topics/oauth2#bots';
-  icon = 'file:../nodes/discord.svg' as ICredentialType['icon'];
+  icon = 'file:../discord.svg' as ICredentialType['icon'];
 
   properties: INodeProperties[] = [
     {
@@ -22,7 +22,7 @@ export class DiscordBotApi implements ICredentialType
       },
       default: '',
       required: true,
-      description: 'The token for the Discord bot application.',
+      description: 'The token for the Discord bot application',
     },
     {
       displayName: 'Production Bot Token',
@@ -32,7 +32,7 @@ export class DiscordBotApi implements ICredentialType
         password: true,
       },
       default: '',
-      description: 'The token used when the workflow is active or runs outside manual mode.',
+      description: 'The token used when the workflow is active or runs outside manual mode',
     },
   ];
 

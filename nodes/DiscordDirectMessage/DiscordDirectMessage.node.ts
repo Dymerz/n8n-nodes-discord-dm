@@ -20,6 +20,12 @@ export class DiscordDirectMessage implements INodeType
     credentials: [
       {
         name: 'discordBotApi',
+        displayName: 'Discord Bot API (Development)',
+        required: true,
+      },
+      {
+        displayName: 'Discord Bot API (Production)',
+        name: 'discordBotProductionApi',
         required: true,
       },
     ],

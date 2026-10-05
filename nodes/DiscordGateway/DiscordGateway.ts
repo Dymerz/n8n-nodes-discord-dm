@@ -27,7 +27,10 @@ export const createDiscordTrigger = async <TEventName extends DiscordEventName>(
   listener: EventListener<TEventName>,
 ): Promise<ITriggerResponse> =>
 {
-  const credentials = await context.getCredentials('discordBotApi');
+  const credentialName = context.getMode() === 'manual'
+    ? 'discordBotApi'
+    : 'discordBotProductionApi';
+  const credentials = await context.getCredentials(credentialName);
   const token = credentials.botToken;
   if (typeof token !== 'string' || token.length === 0)
   {

@@ -44,7 +44,11 @@ user, and Discord limits message content to 2,000 characters.
 
 Create a Discord application and bot in the [Discord Developer
 Portal](https://discord.com/developers/applications), copy the bot token, and
-save it in an n8n **Discord Bot API** credential. The token is stored as a
+save it in an n8n **Discord Bot API** credential. For each trigger, configure
+both credentials: **Discord Bot API** is used while testing a workflow in the
+editor, and **Discord Bot Production API** is used when the workflow is
+active or otherwise runs outside manual mode. This lets debug and published
+workflows use different Discord bots or tokens. The token is stored as a
 password field and is used only for the Gateway connection.
 
 The triggers do not request privileged intents. The bot must be installed in
@@ -72,13 +76,14 @@ docker compose up
 ```
 
 Open [http://localhost:5678](http://localhost:5678) and create a workflow. The
-node is loaded from this package's `dist` directory. To rebuild automatically
-while editing, run `pnpm build:watch` in a second terminal. Stop the n8n
-instance with `docker compose down`.
+node is loaded from this package's `dist` directory. To rebuild the bundled node automatically while editing, run
+`pnpm build:watch` in a second terminal. Stop the n8n instance with
+`docker compose down`.
 
 In VS Code, use **Run and Debug → Start n8n development** to start the
-TypeScript watcher and Docker Compose together. Use the **Stop n8n Compose**
-task to stop the container.
+TypeScript and bundle watcher and Docker Compose together. Use the **Stop n8n
+Compose** task to stop the container. After a node change, n8n reloads the
+updated bundle; refresh the editor page if the node metadata is already open.
 
 The recommended alternative is `pnpm dev`, which uses the `n8n-node` tool to
 start n8n and rebuild the node automatically. The Compose setup is intended for
@@ -87,10 +92,11 @@ the documented external-n8n workflow and requires Docker or Podman.
 ## Usage
 
 Add a trigger or the **Discord Send Direct Message** node to a workflow and
-select a Discord Bot API credential. For the action, provide the recipient's
-Discord user ID and message content. For a trigger, activate the workflow and
-send a DM or add/remove a reaction to test it. The workflow must remain active
-while Discord Gateway events are being received.
+configure its credentials. For the action, select a Discord Bot API
+credential, then provide the recipient's Discord user ID and message content.
+For a trigger, configure both its debug and production credentials, then
+activate the workflow and send a DM or add/remove a reaction to test it. The
+workflow must remain active while Discord Gateway events are being received.
 
 Discord may deliver reconnects and duplicate events. Workflows that perform
 non-idempotent actions should use Discord event or message identifiers to

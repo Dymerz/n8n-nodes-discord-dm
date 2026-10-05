@@ -31,20 +31,20 @@ export class DiscordReactionAdded implements INodeType
     return await createDiscordTrigger(
       this,
       [
-      	DISCORD_INTENTS.DIRECT_MESSAGE_REACTIONS,
-      	DISCORD_INTENTS.GUILD_MESSAGE_REACTIONS,
+        DISCORD_INTENTS.DIRECT_MESSAGE_REACTIONS,
+        DISCORD_INTENTS.GUILD_MESSAGE_REACTIONS,
       ],
       'messageReactionAdd',
       (reaction, user) =>
       {
-      	this.emit([[
-      		{
-      			json: toN8nData({
-      				reaction: reaction.toJSON(),
-      				user: user.toJSON(),
-      			}),
-      		},
-      	]]);
+        this.emit([[
+          {
+            json: toN8nData({
+              reaction: reaction.toJSON(),
+              user: user.toJSON(),
+            }),
+          },
+        ]]);
       },
     );
   }

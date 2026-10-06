@@ -63,6 +63,12 @@ export class DiscordSendDirectMessage implements INodeType
     credentials: [
       {
         name: 'discordBotApi',
+        displayName: 'Discord Bot API (Development)',
+        required: true,
+      },
+      {
+        name: 'discordBotProductionApi',
+        displayName: 'Discord Bot API (Production)',
         required: true,
       },
     ],
@@ -97,6 +103,9 @@ export class DiscordSendDirectMessage implements INodeType
       credentialsType: string,
       requestOptions: IHttpRequestOptions,
     ) => Promise<unknown>;
+    const credentialName = this.getMode() === 'manual'
+      ? 'discordBotApi'
+      : 'discordBotProductionApi';
 
     for (let itemIndex = 0; itemIndex < items.length; itemIndex++)
     {
@@ -120,7 +129,7 @@ export class DiscordSendDirectMessage implements INodeType
         }
 
         const channel = (await request.call(this,
-          'discordBotApi',
+          credentialName,
           {
             baseURL: DISCORD_API_BASE_URL,
             url: '/users/@me/channels',
@@ -145,7 +154,7 @@ export class DiscordSendDirectMessage implements INodeType
         for (const messageChunk of splitMessage(message))
         {
           const sentMessage = (await request.call(this,
-            'discordBotApi',
+            credentialName,
             {
               baseURL: DISCORD_API_BASE_URL,
               url: `/channels/${encodeURIComponent(channelId)}/messages`,

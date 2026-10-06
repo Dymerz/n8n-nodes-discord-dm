@@ -9,6 +9,40 @@ import type {
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 const DISCORD_API_BASE_URL = 'https://discord.com/api/v10';
+const DISCORD_MESSAGE_MAX_LENGTH = 2000;
+
+function splitMessage(message: string): string[]
+{
+  const chunks: string[] = [];
+  let characters: string[] = [];
+  let chunkLength = 0;
+
+  for (const character of message)
+  {
+    if (chunkLength + character.length > DISCORD_MESSAGE_MAX_LENGTH)
+    {
+      chunks.push(characters.join(''));
+      characters = [];
+      chunkLength = 0;
+    }
+
+    characters.push(character);
+    chunkLength += character.length;
+    if (chunkLength === DISCORD_MESSAGE_MAX_LENGTH)
+    {
+      chunks.push(characters.join(''));
+      characters = [];
+      chunkLength = 0;
+    }
+  }
+
+  if (characters.length > 0)
+  {
+    chunks.push(characters.join(''));
+  }
+
+  return chunks;
+}
 
 export class DiscordSendDirectMessage implements INodeType
 {
@@ -50,7 +84,7 @@ export class DiscordSendDirectMessage implements INodeType
         },
         required: true,
         default: '',
-        description: 'The content of the direct message. Discord limits messages to 2,000 characters.',
+        description: 'The content of the direct message. Messages over 2,000 characters are sent in consecutive messages.',
       },
     ],
   };
@@ -108,23 +142,26 @@ export class DiscordSendDirectMessage implements INodeType
           );
         }
 
-        const sentMessage = (await request.call(this,
-          'discordBotApi',
-          {
-            baseURL: DISCORD_API_BASE_URL,
-            url: `/channels/${encodeURIComponent(channelId)}/messages`,
-            method: 'POST',
-            body: {
-              content: message,
+        for (const messageChunk of splitMessage(message))
+        {
+          const sentMessage = (await request.call(this,
+            'discordBotApi',
+            {
+              baseURL: DISCORD_API_BASE_URL,
+              url: `/channels/${encodeURIComponent(channelId)}/messages`,
+              method: 'POST',
+              body: {
+                content: messageChunk,
+              },
+              json: true,
             },
-            json: true,
-          },
-        )) as IDataObject;
+          )) as IDataObject;
 
-        returnData.push({
-          json: sentMessage,
-          pairedItem: { item: itemIndex },
-        });
+          returnData.push({
+            json: sentMessage,
+            pairedItem: { item: itemIndex },
+          });
+        }
       } catch (error)
       {
         const nodeError =

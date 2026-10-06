@@ -40,6 +40,7 @@ export const createDiscordTrigger = async <TEventName extends DiscordEventName>(
   const client = new Client({
     intents,
     partials: [Partials.Channel, Partials.Message, Partials.Reaction, Partials.User],
+    presence: { status: 'online' },
   });
   const handleError = (error: Error) => context.emitError(error);
 

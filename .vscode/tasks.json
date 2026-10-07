@@ -3,15 +3,15 @@
   "tasks": [
     {
       "label": "Build node",
-      "type": "npm",
-      "script": "build",
+      "type": "shell",
+      "command": "pnpm build",
       "problemMatcher": "$tsc",
       "group": "build"
     },
     {
       "label": "Start node watch",
-      "type": "npm",
-      "script": "c",
+      "type": "shell",
+      "command": "pnpm run build:watch",
       "isBackground": true,
       "problemMatcher": {
         "owner": "typescript",

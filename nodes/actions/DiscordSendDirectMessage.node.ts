@@ -63,12 +63,6 @@ export class DiscordSendDirectMessage implements INodeType
     credentials: [
       {
         name: 'discordBotApi',
-        displayName: 'Discord Bot API (Development)',
-        required: true,
-      },
-      {
-        name: 'discordBotProductionApi',
-        displayName: 'Discord Bot API (Production)',
         required: true,
       },
     ],
@@ -99,13 +93,21 @@ export class DiscordSendDirectMessage implements INodeType
   {
     const items = this.getInputData();
     const returnData: INodeExecutionData[] = [];
-    const request = this.helpers.httpRequestWithAuthentication as (
-      credentialsType: string,
+    const credentials = await this.getCredentials('discordBotApi');
+    const productionToken = credentials.productionBotToken;
+    const token = this.getMode() === 'manual'
+      || typeof productionToken !== 'string'
+      || productionToken.length === 0
+      ? credentials.botToken
+      : productionToken;
+    if (typeof token !== 'string' || token.length === 0)
+    {
+      throw new NodeOperationError(this.getNode(), 'The debug Discord bot token is missing from the configured credential.');
+    }
+
+    const request = this.helpers.httpRequest as (
       requestOptions: IHttpRequestOptions,
     ) => Promise<unknown>;
-    const credentialName = this.getMode() === 'manual'
-      ? 'discordBotApi'
-      : 'discordBotProductionApi';
 
     for (let itemIndex = 0; itemIndex < items.length; itemIndex++)
     {
@@ -129,11 +131,13 @@ export class DiscordSendDirectMessage implements INodeType
         }
 
         const channel = (await request.call(this,
-          credentialName,
           {
             baseURL: DISCORD_API_BASE_URL,
             url: '/users/@me/channels',
             method: 'POST',
+            headers: {
+              Authorization: `Bot ${token}`,
+            },
             body: {
               recipient_id: userId,
             },
@@ -154,11 +158,13 @@ export class DiscordSendDirectMessage implements INodeType
         for (const messageChunk of splitMessage(message))
         {
           const sentMessage = (await request.call(this,
-            credentialName,
             {
               baseURL: DISCORD_API_BASE_URL,
               url: `/channels/${encodeURIComponent(channelId)}/messages`,
               method: 'POST',
+              headers: {
+                Authorization: `Bot ${token}`,
+              },
               body: {
                 content: messageChunk,
               },

@@ -14,7 +14,7 @@ export class DiscordBotApi implements ICredentialType
 
   properties: INodeProperties[] = [
     {
-      displayName: 'Bot Token',
+      displayName: 'Debug Bot Token',
       name: 'botToken',
       type: 'string',
       typeOptions: {
@@ -22,7 +22,7 @@ export class DiscordBotApi implements ICredentialType
       },
       default: '',
       required: true,
-      description: 'The token for the Discord bot application',
+      description: 'The token used when testing a workflow manually in the editor',
     },
     {
       displayName: 'Production Bot Token',
@@ -32,7 +32,7 @@ export class DiscordBotApi implements ICredentialType
         password: true,
       },
       default: '',
-      description: 'The token used when the workflow is active or runs outside manual mode',
+      description: 'Optional token used when the workflow runs outside manual mode. If omitted, the debug token is used.',
     },
   ];
 

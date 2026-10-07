@@ -44,13 +44,13 @@ user, and Discord limits message content to 2,000 characters.
 
 Create a Discord application and bot in the [Discord Developer
 Portal](https://discord.com/developers/applications), copy the bot token, and
-save it in an n8n **Discord Bot API** credential. Enter the debug bot token in
-**Bot Token** and, when needed, a separate production bot token in
-**Production Bot Token**. Triggers automatically use the debug token while
-testing a workflow in the editor and the production token when the workflow is
-active or otherwise runs outside manual mode. This lets debug and published
-workflows use different Discord bots or tokens. Both values are stored as
-password fields.
+save it in a single n8n **Discord Bot API** credential. Enter the debug bot
+token in **Debug Bot Token**. You can optionally enter a separate production
+token in **Production Bot Token**; triggers and actions use the debug token
+while testing a workflow in the editor, and use the production token when the
+workflow runs outside manual mode. If no production token is set, they fall
+back to the debug token. This lets debug and published workflows use different
+Discord bots or tokens. Both values are stored as password fields.
 
 The triggers do not request privileged intents. The bot must be installed in
 the servers where reactions should be observed and have permission to view the
@@ -83,8 +83,15 @@ node is loaded from this package's `dist` directory. To rebuild the bundled node
 
 In VS Code, use **Run and Debug → Start n8n development** to start the
 TypeScript and bundle watcher and Docker Compose together. Use the **Stop n8n
-Compose** task to stop the container. After a node change, n8n reloads the
-updated bundle; refresh the editor page if the node metadata is already open.
+Compose** task to stop the container. The watcher rebuilds `dist`, but the
+Compose logs may report that file watching for hot reload is unavailable. After
+adding or changing a node, restart the n8n service with
+`docker compose restart n8n`, then refresh the editor.
+
+If the logs report `Unrecognized node type: CUSTOM.discordDirectMessage`, a
+saved workflow is referring to the old custom node type ID. After the current
+package has loaded, remove that missing node from the workflow and add the
+**Discord Direct Message Trigger** again from the node picker.
 
 The recommended alternative is `pnpm dev`, which uses the `n8n-node` tool to
 start n8n and rebuild the node automatically. The Compose setup is intended for

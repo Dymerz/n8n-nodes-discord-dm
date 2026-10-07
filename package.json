@@ -38,8 +38,8 @@
       "dist/nodes/credentials/DiscordBotApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/triggers/DiscordDirectMessage.trigger.js",
       "dist/nodes/actions/DiscordSendDirectMessage.node.js",
+      "dist/nodes/triggers/DiscordDirectMessage.trigger.js",
       "dist/nodes/triggers/DiscordReactionAdded.trigger.js",
       "dist/nodes/triggers/DiscordReactionRemoved.trigger.js"
     ]

@@ -68,7 +68,11 @@ availability and bot permissions are controlled by Discord.
 ## Local development
 
 The project includes a Docker Compose setup for testing the node in an n8n
-instance with development reload enabled. Build the node before starting n8n:
+instance with development reload enabled. The Compose setup mounts the project
+root so n8n can read `package.json` and resolve the node files it declares
+under `dist/`. n8n's custom extension loader discovers `.node.js` files, so the
+node sources and their built bundles use the `.node.ts` and `.node.js` suffixes.
+Build the node before starting n8n:
 
 ```shell
 pnpm install

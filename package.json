@@ -39,9 +39,9 @@
     ],
     "nodes": [
       "dist/nodes/actions/DiscordSendDirectMessage.node.js",
-      "dist/nodes/triggers/DiscordDirectMessage.trigger.js",
-      "dist/nodes/triggers/DiscordReactionAdded.trigger.js",
-      "dist/nodes/triggers/DiscordReactionRemoved.trigger.js"
+      "dist/nodes/triggers/DiscordDirectMessage.node.js",
+      "dist/nodes/triggers/DiscordReactionAdded.node.js",
+      "dist/nodes/triggers/DiscordReactionRemoved.node.js"
     ]
   },
   "devDependencies": {

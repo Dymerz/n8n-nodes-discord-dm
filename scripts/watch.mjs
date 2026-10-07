@@ -2,10 +2,10 @@ import { spawn } from 'node:child_process';
 import { build, context } from 'esbuild';
 
 const entries = [
-  'dist/nodes/triggers/DiscordDirectMessage.trigger.js',
+  'dist/nodes/triggers/DiscordDirectMessage.node.js',
   'dist/nodes/actions/DiscordSendDirectMessage.node.js',
-  'dist/nodes/triggers/DiscordReactionAdded.trigger.js',
-  'dist/nodes/triggers/DiscordReactionRemoved.trigger.js',
+  'dist/nodes/triggers/DiscordReactionAdded.node.js',
+  'dist/nodes/triggers/DiscordReactionRemoved.node.js',
 ];
 
 await new Promise((resolve, reject) => {

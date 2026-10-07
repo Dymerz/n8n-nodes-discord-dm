@@ -1,16 +1,8 @@
 services:
   n8n:
     image: docker.n8n.io/n8nio/n8n:2.41.7
-    user: root
-    working_dir: /home/node/.n8n/custom/n8n-nodes-discord-triggers
-    entrypoint: /bin/sh
-    command:
-      - -c
-      - >-
-        chown -R node:node
-        /home/node/.n8n/custom/n8n-nodes-discord-triggers/node_modules &&
-        su -s /bin/sh node -c "npm install --omit=dev --include=peer
-        --no-package-lock --ignore-scripts --no-audit --no-fund && n8n start"
+    # user: root
+    working_dir: /home/node/.n8n/custom/n8n-nodes-discord-dm
     ports:
       - "5678:5678"
     environment:
@@ -18,15 +10,10 @@ services:
       N8N_DEV_RELOAD: "true"
       N8N_CUSTOM_EXTENSIONS: /home/node/.n8n/custom
       N8N_SECURE_COOKIE: "false"
+      # NODE_PATH: /usr/local/lib/node_modules/n8n/node_modules:/usr/local/lib/node_modules
     volumes:
       - n8n_data:/home/node/.n8n
-      - .:/home/node/.n8n/custom/n8n-nodes-discord-triggers
-      - type: volume
-        source: node_modules
-        target: /home/node/.n8n/custom/n8n-nodes-discord-triggers/node_modules
-        volume:
-          nocopy: true
+      - .:/home/node/.n8n/custom/n8n-nodes-discord-dm
 
 volumes:
   n8n_data:
-  node_modules:

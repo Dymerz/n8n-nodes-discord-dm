@@ -1,20 +1,22 @@
+import { context } from 'esbuild';
 import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
-import { build, context } from 'esbuild';
 
 const packageJson = JSON.parse(
   await readFile(new URL('../package.json', import.meta.url), 'utf8'),
 );
 const entries = packageJson.n8n.nodes;
 
-await new Promise((resolve, reject) => {
+await new Promise((resolve, reject) =>
+{
   const initialBuild = spawn('tsc', ['--pretty'], {
     stdio: 'inherit',
     shell: process.platform === 'win32',
   });
 
   initialBuild.once('error', reject);
-  initialBuild.once('exit', (code) => {
+  initialBuild.once('exit', (code) =>
+  {
     if (code === 0) resolve();
     else reject(new Error(`TypeScript compilation failed with exit code ${code}`));
   });
@@ -25,7 +27,8 @@ const tsc = spawn('tsc', ['--watch', '--pretty'], {
   shell: process.platform === 'win32',
 });
 
-const stop = () => {
+const stop = () =>
+{
   tsc.kill();
 };
 

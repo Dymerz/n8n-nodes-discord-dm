@@ -29,7 +29,9 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.d.ts",
+    "!dist/**/*.map"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,

@@ -1,5 +1,5 @@
 import { build } from 'esbuild';
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile, unlink } from 'node:fs/promises';
 
 const packageJson = JSON.parse(
   await readFile(new URL('../package.json', import.meta.url), 'utf8'),
@@ -7,7 +7,8 @@ const packageJson = JSON.parse(
 const entries = packageJson.n8n.nodes;
 
 await Promise.all(
-  entries.map(async (entry) => {
+  entries.map(async (entry) =>
+  {
     await build({
       bundle: true,
       entryPoints: [entry],
@@ -16,8 +17,29 @@ await Promise.all(
       allowOverwrite: true,
       outfile: entry,
       platform: 'node',
-      sourcemap: true,
+      sourcemap: false,
       target: 'node18',
     });
   }),
 );
+
+async function removeUnpublishedArtifacts(directory)
+{
+  for (const entry of await readdir(directory, { withFileTypes: true }))
+  {
+    const entryPath = new URL(
+      entry.isDirectory() ? `${entry.name}/` : entry.name,
+      directory,
+    );
+
+    if (entry.isDirectory())
+    {
+      await removeUnpublishedArtifacts(entryPath);
+    } else if (entry.name.endsWith('.map') || entry.name.endsWith('.d.ts'))
+    {
+      await unlink(entryPath);
+    }
+  }
+}
+
+await removeUnpublishedArtifacts(new URL('../dist/', import.meta.url));

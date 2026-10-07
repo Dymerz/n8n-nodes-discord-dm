@@ -5,8 +5,8 @@ the Discord Gateway and can send direct messages through the Discord REST API.
 It provides separate triggers for direct messages, added reactions, and removed
 reactions, plus a node for sending a direct message to a user.
 
-This package uses `discord.js` and bundles it into each node entry during the
-build, so the published package has no runtime dependency that n8n must
+This package bundles `discord.js` once as a shared module used by all trigger
+nodes, so the published package has no runtime dependency that n8n must
 install. It is intended for self-hosted n8n installations and is not eligible
 for n8n Cloud community-node loading.
 

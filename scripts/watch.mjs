@@ -22,7 +22,7 @@ await new Promise((resolve, reject) =>
   });
 });
 
-const tsc = spawn('tsc', ['--watch', '--pretty'], {
+const tsc = spawn('tsc', ['--watch', '--pretty', '--noEmit'], {
   stdio: 'inherit',
   shell: process.platform === 'win32',
 });
@@ -39,16 +39,30 @@ const contexts = await Promise.all(
   entries.map((entry) =>
     context({
       bundle: true,
-      entryPoints: [entry],
-      external: ['n8n-workflow'],
+      entryPoints: [entry.replace(/^dist\//, '').replace(/\.js$/, '.ts')],
+      external: ['n8n-workflow', './DiscordGateway'],
       format: 'cjs',
       allowOverwrite: true,
       outfile: entry,
       platform: 'node',
-      sourcemap: true,
+      sourcemap: false,
       target: 'node18',
     }),
   ),
+);
+
+contexts.push(
+  await context({
+    bundle: true,
+    entryPoints: ['nodes/triggers/DiscordGateway.ts'],
+    external: ['n8n-workflow'],
+    format: 'cjs',
+    allowOverwrite: true,
+    outfile: 'dist/nodes/triggers/DiscordGateway.js',
+    platform: 'node',
+    sourcemap: false,
+    target: 'node18',
+  }),
 );
 
 await Promise.all(contexts.map((item) => item.watch()));

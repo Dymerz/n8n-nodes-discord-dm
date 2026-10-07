@@ -5,14 +5,16 @@ const packageJson = JSON.parse(
   await readFile(new URL('../package.json', import.meta.url), 'utf8'),
 );
 const entries = packageJson.n8n.nodes;
+const sharedGateway = 'dist/nodes/triggers/DiscordGateway.js';
+const sharedGatewaySource = 'nodes/triggers/DiscordGateway.ts';
 
 await Promise.all(
   entries.map(async (entry) =>
   {
     await build({
       bundle: true,
-      entryPoints: [entry],
-      external: ['n8n-workflow'],
+      entryPoints: [entry.replace(/^dist\//, '').replace(/\.js$/, '.ts')],
+      external: ['n8n-workflow', './DiscordGateway'],
       format: 'cjs',
       allowOverwrite: true,
       outfile: entry,
@@ -22,6 +24,18 @@ await Promise.all(
     });
   }),
 );
+
+await build({
+  bundle: true,
+  entryPoints: [sharedGatewaySource],
+  external: ['n8n-workflow'],
+  format: 'cjs',
+  allowOverwrite: true,
+  outfile: sharedGateway,
+  platform: 'node',
+  sourcemap: false,
+  target: 'node18',
+});
 
 async function removeUnpublishedArtifacts(directory)
 {

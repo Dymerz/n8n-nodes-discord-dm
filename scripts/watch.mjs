@@ -1,12 +1,11 @@
 import { spawn } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
 import { build, context } from 'esbuild';
 
-const entries = [
-  'dist/nodes/triggers/DiscordDirectMessage.node.js',
-  'dist/nodes/actions/DiscordSendDirectMessage.node.js',
-  'dist/nodes/triggers/DiscordReactionAdded.node.js',
-  'dist/nodes/triggers/DiscordReactionRemoved.node.js',
-];
+const packageJson = JSON.parse(
+  await readFile(new URL('../package.json', import.meta.url), 'utf8'),
+);
+const entries = packageJson.n8n.nodes;
 
 await new Promise((resolve, reject) => {
   const initialBuild = spawn('tsc', ['--pretty'], {

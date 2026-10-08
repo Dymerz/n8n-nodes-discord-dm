@@ -1,14 +1,14 @@
+import { Client } from 'discord.js';
 import type {
-  IDataObject,
   IExecuteFunctions,
-  IHttpRequestOptions,
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
 } from 'n8n-workflow';
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
-const DISCORD_API_BASE_URL = 'https://discord.com/api/v10';
+import { toN8nData } from '../triggers/DiscordGateway';
+
 const DISCORD_MESSAGE_MAX_LENGTH = 2000;
 
 function splitMessage(message: string): string[]
@@ -105,99 +105,76 @@ export class DiscordSendDirectMessage implements INodeType
       throw new NodeOperationError(this.getNode(), 'The debug Discord bot token is missing from the configured credential.');
     }
 
-    const request = this.helpers.httpRequest as (
-      requestOptions: IHttpRequestOptions,
-    ) => Promise<unknown>;
-
-    for (let itemIndex = 0; itemIndex < items.length; itemIndex++)
+    const client = new Client({ intents: [] });
+    client.on('error', (error) =>
     {
-      try
+      this.logger.error('Discord client error', { error: error.message });
+    });
+    let loginPromise: Promise<string> | undefined;
+
+    try
+    {
+      for (let itemIndex = 0; itemIndex < items.length; itemIndex++)
       {
-        const userId = this.getNodeParameter('userId', itemIndex) as string;
-        const message = this.getNodeParameter('message', itemIndex) as string;
-
-        if (userId.trim().length === 0)
+        try
         {
-          throw new NodeOperationError(this.getNode(), 'User ID must not be empty.', {
-            itemIndex,
-          });
-        }
+          const userId = this.getNodeParameter('userId', itemIndex) as string;
+          const message = this.getNodeParameter('message', itemIndex) as string;
 
-        if (message.trim().length === 0)
-        {
-          throw new NodeOperationError(this.getNode(), 'Message must not be empty.', {
-            itemIndex,
-          });
-        }
-
-        const channel = (await request.call(this,
+          if (userId.trim().length === 0)
           {
-            baseURL: DISCORD_API_BASE_URL,
-            url: '/users/@me/channels',
-            method: 'POST',
-            headers: {
-              Authorization: `Bot ${token}`,
-            },
-            body: {
-              recipient_id: userId,
-            },
-            json: true,
-          },
-        )) as IDataObject;
+            throw new NodeOperationError(this.getNode(), 'User ID must not be empty.', {
+              itemIndex,
+            });
+          }
 
-        const channelId = channel.id;
-        if (typeof channelId !== 'string' || channelId.length === 0)
-        {
-          throw new NodeApiError(
-            this.getNode(),
-            { message: 'Discord did not return a channel ID.' },
-            { itemIndex },
-          );
+          if (message.trim().length === 0)
+          {
+            throw new NodeOperationError(this.getNode(), 'Message must not be empty.', {
+              itemIndex,
+            });
+          }
+
+          loginPromise ??= client.login(token);
+          await loginPromise;
+
+          const user = await client.users.fetch(userId);
+          for (const messageChunk of splitMessage(message))
+          {
+            const sentMessage = await user.send(messageChunk);
+
+            returnData.push({
+              json: toN8nData(sentMessage.toJSON()),
+              pairedItem: { item: itemIndex },
+            });
+          }
         }
-
-        for (const messageChunk of splitMessage(message))
+        catch (error)
         {
-          const sentMessage = (await request.call(this,
-            {
-              baseURL: DISCORD_API_BASE_URL,
-              url: `/channels/${encodeURIComponent(channelId)}/messages`,
-              method: 'POST',
-              headers: {
-                Authorization: `Bot ${token}`,
-              },
-              body: {
-                content: messageChunk,
-              },
-              json: true,
-            },
-          )) as IDataObject;
+          const nodeError =
+            error instanceof NodeOperationError || error instanceof NodeApiError
+              ? error
+              : new NodeApiError(
+                this.getNode(),
+                error instanceof Error ? { message: error.message } : { message: String(error) },
+                { itemIndex },
+              );
+          if (this.continueOnFail())
+          {
+            returnData.push({
+              json: { error: nodeError.message },
+              pairedItem: { item: itemIndex },
+            });
+            continue;
+          }
 
-          returnData.push({
-            json: sentMessage,
-            pairedItem: { item: itemIndex },
-          });
+          throw nodeError;
         }
-      } catch (error)
-      {
-        const nodeError =
-          error instanceof NodeOperationError || error instanceof NodeApiError
-            ? error
-            : new NodeApiError(
-              this.getNode(),
-              error instanceof Error ? { message: error.message } : { message: String(error) },
-              { itemIndex },
-            );
-        if (this.continueOnFail())
-        {
-          returnData.push({
-            json: { error: nodeError.message },
-            pairedItem: { item: itemIndex },
-          });
-          continue;
-        }
-
-        throw nodeError;
       }
+    }
+    finally
+    {
+      client.destroy();
     }
 
     return [returnData];

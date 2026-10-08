@@ -41,8 +41,9 @@ Each trigger emits the complete Discord Gateway event data as one n8n item.
 The action accepts a Discord user ID and message content. It returns the
 message object returned by Discord. The bot must be able to message the target
 user, and Discord limits message content to 2,000 characters. All binary
-properties on each input item are sent as attachments with the first message
-chunk.
+attachments are optional: enter the input item's binary property name in
+**Binary Property** to send that file with the first message chunk, or leave it
+empty to send text only.
 
 ## Credentials
 
@@ -110,6 +111,8 @@ the documented external-n8n workflow and requires Docker or Podman.
 Add a trigger or the **Discord Send Direct Message** node to a workflow and
 configure its credentials. For the action, select a Discord Bot API
 credential, then provide the recipient's Discord user ID and message content.
+To attach a file, enter the name of its binary property in **Binary Property**;
+leave it empty to send no file.
 For a trigger, configure both its debug and production credentials, then
 activate the workflow and send a DM or add/remove a reaction to test it. The
 workflow must remain active while Discord Gateway events are being received.

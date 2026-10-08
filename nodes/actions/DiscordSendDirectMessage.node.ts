@@ -139,9 +139,21 @@ export class DiscordSendDirectMessage implements INodeType
           await loginPromise;
 
           const user = await client.users.fetch(userId);
-          for (const messageChunk of splitMessage(message))
+          const files = await Promise.all(
+            Object.entries(items[itemIndex].binary ?? {}).map(async ([propertyName, binaryData]) => ({
+              attachment: await this.helpers.getBinaryDataBuffer(itemIndex, binaryData),
+              name: binaryData.fileName || propertyName,
+            })),
+          );
+          const messageChunks = splitMessage(message);
+          for (let chunkIndex = 0; chunkIndex < messageChunks.length; chunkIndex++)
           {
-            const sentMessage = await user.send(messageChunk);
+            const messageChunk = messageChunks[chunkIndex];
+            const sentMessage = await user.send(
+              chunkIndex === 0 && files.length > 0
+                ? { content: messageChunk, files }
+                : messageChunk,
+            );
 
             returnData.push({
               json: toN8nData(sentMessage.toJSON()),

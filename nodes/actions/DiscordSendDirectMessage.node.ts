@@ -86,6 +86,13 @@ export class DiscordSendDirectMessage implements INodeType
         default: '',
         description: 'The content of the direct message. Messages over 2,000 characters are sent in consecutive messages.',
       },
+      {
+        displayName: 'Binary Property',
+        name: 'binaryPropertyName',
+        type: 'string',
+        default: '',
+        description: 'Name of the input binary property to attach. Leave empty to send the message without a file.',
+      },
     ],
   };
 
@@ -120,6 +127,7 @@ export class DiscordSendDirectMessage implements INodeType
         {
           const userId = this.getNodeParameter('userId', itemIndex) as string;
           const message = this.getNodeParameter('message', itemIndex) as string;
+          const binaryPropertyName = (this.getNodeParameter('binaryPropertyName', itemIndex, '') as string).trim();
 
           if (userId.trim().length === 0)
           {
@@ -139,12 +147,15 @@ export class DiscordSendDirectMessage implements INodeType
           await loginPromise;
 
           const user = await client.users.fetch(userId);
-          const files = await Promise.all(
-            Object.entries(items[itemIndex].binary ?? {}).map(async ([propertyName, binaryData]) => ({
+          const binaryData = binaryPropertyName.length > 0
+            ? this.helpers.assertBinaryData(itemIndex, binaryPropertyName)
+            : undefined;
+          const files = binaryData
+            ? [{
               attachment: await this.helpers.getBinaryDataBuffer(itemIndex, binaryData),
-              name: binaryData.fileName || propertyName,
-            })),
-          );
+              name: binaryData.fileName || binaryPropertyName,
+            }]
+            : [];
           const messageChunks = splitMessage(message);
           for (let chunkIndex = 0; chunkIndex < messageChunks.length; chunkIndex++)
           {

@@ -1,7 +1,7 @@
 # n8n-nodes-discord-triggers
 
 This n8n community node starts workflows from Discord bot events delivered over
-the Discord Gateway and can send direct messages through the Discord REST API.
+the Discord Gateway and can send direct messages through discord.js.
 It provides separate triggers for direct messages, added reactions, and removed
 reactions, plus a node for sending a direct message to a user.
 
@@ -23,7 +23,9 @@ Follow the [community node installation guide](https://docs.n8n.io/integrations/
 * **Discord Direct Message Trigger** — emits raw `MESSAGE_CREATE` payloads
   received in direct-message or group-direct-message channels, excluding
   messages sent by bots. It also sends Discord's typing indicator before
-  emitting each message.
+  emitting each message. Message attachments are downloaded and included in
+  the item's binary data under properties named `attachment_0`,
+  `attachment_1`, and so on; the file name and MIME type are preserved.
 * **Discord Reaction Added Trigger** — emits raw `MESSAGE_REACTION_ADD`
   payloads.
 * **Discord Reaction Removed Trigger** — emits raw `MESSAGE_REACTION_REMOVE`
@@ -34,11 +36,13 @@ Each trigger emits the complete Discord Gateway event data as one n8n item.
 ## Actions
 
 * **Discord Send Direct Message** — creates or opens a direct-message channel
-  with a Discord user and sends a message to it.
+  with a Discord user and sends a message to it using discord.js.
 
 The action accepts a Discord user ID and message content. It returns the
 message object returned by Discord. The bot must be able to message the target
-user, and Discord limits message content to 2,000 characters.
+user, and Discord limits message content to 2,000 characters. All binary
+properties on each input item are sent as attachments with the first message
+chunk.
 
 ## Credentials
 
@@ -56,7 +60,7 @@ The triggers do not request privileged intents. The bot must be installed in
 the servers where reactions should be observed and have permission to view the
 relevant channels and read message history. Direct messages require the bot to
 share a DM conversation with the user. The send-direct-message action uses the
-same bot credential with Discord's REST API.
+same bot credential through discord.js.
 
 Do not share or commit the bot token. Discord may invalidate exposed tokens.
 

@@ -52,7 +52,37 @@ export class DiscordDirectMessage implements INodeType
           this.emitError(error instanceof Error ? error : new Error(String(error)));
         }
 
-        this.emit([[{ json: toN8nData(message.toJSON()) }]]);
+        try
+        {
+          const binaryEntries = await Promise.all(
+            [...message.attachments.values()].map(async (attachment, index) =>
+            {
+              const response = await this.helpers.httpRequest({
+                url: attachment.url,
+                encoding: 'arraybuffer',
+              });
+              const buffer = await this.helpers.binaryToBuffer(response);
+              const fileName = attachment.name ?? attachment.id;
+              const binaryData = await this.helpers.prepareBinaryData(
+                buffer,
+                fileName,
+                attachment.contentType ?? 'application/octet-stream',
+              );
+
+              return [`attachment_${index}`, binaryData] as const;
+            }),
+          );
+
+          this.emit([[
+            {
+              json: toN8nData(message.toJSON()),
+              binary: Object.fromEntries(binaryEntries),
+            },
+          ]]);
+        } catch (error)
+        {
+          this.emitError(error instanceof Error ? error : new Error(String(error)));
+        }
       },
     );
   }

@@ -1,12 +1,12 @@
 import type { INodeType, INodeTypeDescription, ITriggerFunctions } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
-import { createDiscordTrigger, DISCORD_INTENTS, toN8nData } from './DiscordGateway';
+import { createDiscordTrigger, DISCORD_INTENTS, toN8nData } from './DiscordGatewayTrigger';
 
 export class DiscordDirectMessage implements INodeType
 {
   description: INodeTypeDescription = {
     displayName: 'Discord Direct Message Trigger',
-    name: 'discordDirectMessage',
+    name: 'discordDirectMessageTrigger',
     icon: { light: 'file:../discord.svg', dark: 'file:../discord.svg' },
     group: ['trigger'],
     version: 1,

@@ -14,7 +14,7 @@ await Promise.all(
     await build({
       bundle: true,
       entryPoints: [entry.replace(/^dist\//, '').replace(/\.js$/, '.ts')],
-      external: ['n8n-workflow', './DiscordGateway'],
+      external: ['n8n-workflow', './DiscordGateway', '../triggers/DiscordGateway'],
       format: 'cjs',
       allowOverwrite: true,
       outfile: entry,

@@ -72,7 +72,7 @@ export class DiscordSendDirectMessage implements INodeType
         name: 'userId',
         type: 'string',
         required: true,
-        default: '',
+        default: '={{ $("Discord Direct Message Trigger").json.authorId ?? "" }}',
         description: 'The Discord user ID that should receive the direct message',
       },
       {
@@ -165,7 +165,6 @@ export class DiscordSendDirectMessage implements INodeType
                 ? { content: messageChunk, files }
                 : messageChunk,
             );
-
             returnData.push({
               json: toN8nData(sentMessage.toJSON()),
               pairedItem: { item: itemIndex },

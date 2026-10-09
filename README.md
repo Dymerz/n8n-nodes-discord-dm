@@ -22,10 +22,12 @@ Follow the [community node installation guide](https://docs.n8n.io/integrations/
 
 * **Discord Direct Message Trigger** — emits raw `MESSAGE_CREATE` payloads
   received in direct-message or group-direct-message channels, excluding
-  messages sent by bots. It also sends Discord's typing indicator before
-  emitting each message. Message attachments are downloaded and included in
-  the item's binary data under properties named `attachment_0`,
-  `attachment_1`, and so on; the file name and MIME type are preserved.
+  messages sent by bots. It sends Discord's typing indicator once and adds an
+  eye reaction (`👁️`) to each received message. Message attachments are
+  downloaded and included in the item's binary data under properties named
+  `attachment_0`,
+  `attachment_1`, and so on; the file name and MIME type are preserved. The bot
+  must be allowed to add reactions in the channel.
 * **Discord Reaction Added Trigger** — emits raw `MESSAGE_REACTION_ADD`
   payloads.
 * **Discord Reaction Removed Trigger** — emits raw `MESSAGE_REACTION_REMOVE`

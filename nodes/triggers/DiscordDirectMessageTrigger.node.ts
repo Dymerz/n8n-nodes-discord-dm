@@ -1,8 +1,8 @@
 import type { INodeType, INodeTypeDescription, ITriggerFunctions } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
-import { createDiscordTrigger, DISCORD_INTENTS, toN8nData } from './DiscordGatewayTrigger';
+import { createDiscordTrigger, DISCORD_INTENTS, toN8nData } from './DiscordGateway';
 
-export class DiscordDirectMessage implements INodeType
+export class DiscordDirectMessageTrigger implements INodeType
 {
   description: INodeTypeDescription = {
     displayName: 'Discord Direct Message Trigger',
@@ -11,7 +11,7 @@ export class DiscordDirectMessage implements INodeType
     group: ['trigger'],
     version: 1,
     subtitle: 'Listen for direct messages',
-    description: 'Starts a workflow when the bot receives a Discord direct message.',
+    description: 'Starts a workflow when the bot receives a Discord direct message, briefly shows typing, and adds an eye reaction.',
     defaults: {
       name: 'Discord Direct Message Trigger',
     },
@@ -47,6 +47,14 @@ export class DiscordDirectMessage implements INodeType
         try
         {
           await message.channel.sendTyping();
+        } catch (error)
+        {
+          this.emitError(error instanceof Error ? error : new Error(String(error)));
+        }
+
+        try
+        {
+          await message.react('👀');
         } catch (error)
         {
           this.emitError(error instanceof Error ? error : new Error(String(error)));

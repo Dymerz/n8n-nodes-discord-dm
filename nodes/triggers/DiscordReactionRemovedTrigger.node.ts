@@ -1,12 +1,12 @@
 import type { INodeType, INodeTypeDescription, ITriggerFunctions } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
-import { createDiscordTrigger, DISCORD_INTENTS, toN8nData } from './DiscordGatewayTrigger';
+import { createDiscordTrigger, DISCORD_INTENTS, toN8nData } from './DiscordGateway';
 
-export class DiscordReactionRemoved implements INodeType
+export class DiscordReactionRemovedTrigger implements INodeType
 {
   description: INodeTypeDescription = {
     displayName: 'Discord Reaction Removed Trigger',
-    name: 'discordReactionRemoved',
+    name: 'discordReactionRemovedTrigger',
     icon: { light: 'file:../discord.svg', dark: 'file:../discord.svg' },
     group: ['trigger'],
     version: 1,

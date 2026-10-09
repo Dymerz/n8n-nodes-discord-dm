@@ -40,7 +40,7 @@ const contexts = await Promise.all(
     context({
       bundle: true,
       entryPoints: [entry.replace(/^dist\//, '').replace(/\.js$/, '.ts')],
-      external: ['n8n-workflow', './DiscordGateway'],
+      external: ['n8n-workflow', './DiscordGateway', '../triggers/DiscordGateway'],
       format: 'cjs',
       allowOverwrite: true,
       outfile: entry,

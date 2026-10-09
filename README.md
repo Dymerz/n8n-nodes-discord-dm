@@ -1,4 +1,4 @@
-# n8n-nodes-discord-triggers
+# n8n-nodes-discord-dm
 
 This n8n community node starts workflows from Discord bot events delivered over
 the Discord Gateway and can send direct messages through discord.js.

@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-discord-dm",
   "version": "0.1.4",
-  "description": "Discord Gateway trigger nodes for n8n.",
+  "description": "Discord direct message and reaction nodes for n8n.",
   "license": "MIT",
   "homepage": "https://github.com/Dymerz/n8n-nodes-discord-dm",
   "keywords": [

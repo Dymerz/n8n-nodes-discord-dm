@@ -1,12 +1,20 @@
-import { Client, GatewayIntentBits, Partials, type ClientEvents } from 'discord.js';
 import
 {
   NodeApiError,
-  type IDataObject,
   type ITriggerFunctions,
   type ITriggerResponse,
   type JsonObject,
 } from 'n8n-workflow';
+
+import {
+  createDiscordClient,
+  GatewayIntentBits,
+  getBotToken,
+  Partials,
+  toN8nData,
+  type DiscordEventListener,
+  type DiscordEventName,
+} from './DiscordClient';
 
 export const DISCORD_INTENTS = {
   DIRECT_MESSAGES: GatewayIntentBits.DirectMessages,
@@ -14,11 +22,7 @@ export const DISCORD_INTENTS = {
   GUILD_MESSAGE_REACTIONS: GatewayIntentBits.GuildMessageReactions,
 } as const;
 
-type DiscordEventName = keyof ClientEvents;
-type EventListener<TEventName extends DiscordEventName> = (...args: ClientEvents[TEventName]) => void;
-
-const toN8nData = (value: unknown): IDataObject =>
-  JSON.parse(JSON.stringify(value)) as IDataObject;
+type EventListener<TEventName extends DiscordEventName> = DiscordEventListener<TEventName>;
 
 export const createDiscordTrigger = async <TEventName extends DiscordEventName>(
   context: ITriggerFunctions,
@@ -27,18 +31,8 @@ export const createDiscordTrigger = async <TEventName extends DiscordEventName>(
   listener: EventListener<TEventName>,
 ): Promise<ITriggerResponse> =>
 {
-  const credentials = await context.getCredentials('discordBotApi');
-  const mode = context.getMode();
-  const productionToken = credentials.productionBotToken;
-  const token = mode === 'manual' || typeof productionToken !== 'string' || productionToken.length === 0
-    ? credentials.botToken
-    : productionToken;
-  if (typeof token !== 'string' || token.length === 0)
-  {
-    throw new Error('The debug Discord bot token is missing from the configured credential.');
-  }
-
-  const client = new Client({
+  const token = await getBotToken(context);
+  const client = createDiscordClient({
     intents,
     partials: [Partials.Channel, Partials.Message, Partials.Reaction, Partials.User],
     presence: { status: 'online' },

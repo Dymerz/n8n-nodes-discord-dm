@@ -40,7 +40,7 @@ const contexts = await Promise.all(
     context({
       bundle: true,
       entryPoints: [entry.replace(/^dist\//, '').replace(/\.js$/, '.ts')],
-      external: ['n8n-workflow', './DiscordGateway', '../triggers/DiscordGateway'],
+      external: ['n8n-workflow', '*/DiscordGateway', '*/DiscordClient'],
       format: 'cjs',
       allowOverwrite: true,
       outfile: entry,
@@ -54,11 +54,22 @@ const contexts = await Promise.all(
 contexts.push(
   await context({
     bundle: true,
-    entryPoints: ['nodes/triggers/DiscordGateway.ts'],
+    entryPoints: ['nodes/DiscordClient.ts'],
     external: ['n8n-workflow'],
     format: 'cjs',
     allowOverwrite: true,
-    outfile: 'dist/nodes/triggers/DiscordGateway.js',
+    outfile: 'dist/nodes/DiscordClient.js',
+    platform: 'node',
+    sourcemap: false,
+    target: 'node18',
+  }),
+  await context({
+    bundle: true,
+    entryPoints: ['nodes/DiscordGateway.ts'],
+    external: ['n8n-workflow', './DiscordClient'],
+    format: 'cjs',
+    allowOverwrite: true,
+    outfile: 'dist/nodes/DiscordGateway.js',
     platform: 'node',
     sourcemap: false,
     target: 'node18',

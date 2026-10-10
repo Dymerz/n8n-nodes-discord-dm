@@ -1,4 +1,3 @@
-import { Client } from 'discord.js';
 import type {
   IExecuteFunctions,
   INodeExecutionData,
@@ -7,7 +6,7 @@ import type {
 } from 'n8n-workflow';
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
-import { toN8nData } from '../triggers/DiscordGateway';
+import { createDiscordActionClient, toN8nData } from '../DiscordClient';
 
 const DISCORD_MESSAGE_MAX_LENGTH = 2000;
 
@@ -100,24 +99,7 @@ export class DiscordSendDirectMessage implements INodeType
   {
     const items = this.getInputData();
     const returnData: INodeExecutionData[] = [];
-    const credentials = await this.getCredentials('discordBotApi');
-    const productionToken = credentials.productionBotToken;
-    const token = this.getMode() === 'manual'
-      || typeof productionToken !== 'string'
-      || productionToken.length === 0
-      ? credentials.botToken
-      : productionToken;
-    if (typeof token !== 'string' || token.length === 0)
-    {
-      throw new NodeOperationError(this.getNode(), 'The debug Discord bot token is missing from the configured credential.');
-    }
-
-    const client = new Client({ intents: [] });
-    client.on('error', (error) =>
-    {
-      this.logger.error('Discord client error', { error: error.message });
-    });
-    let loginPromise: Promise<string> | undefined;
+    const discord = await createDiscordActionClient(this);
 
     try
     {
@@ -143,8 +125,7 @@ export class DiscordSendDirectMessage implements INodeType
             });
           }
 
-          loginPromise ??= client.login(token);
-          await loginPromise;
+          const client = await discord.ready();
 
           const user = await client.users.fetch(userId);
           const binaryData = binaryPropertyName.length > 0
@@ -196,7 +177,7 @@ export class DiscordSendDirectMessage implements INodeType
     }
     finally
     {
-      client.destroy();
+      discord.destroy();
     }
 
     return [returnData];

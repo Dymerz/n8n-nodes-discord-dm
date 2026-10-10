@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-discord-dm",
-  "version": "0.1.4",
+  "version": "0.0.0",
   "description": "Discord direct message and reaction nodes for n8n.",
   "license": "MIT",
   "homepage": "https://github.com/Dymerz/n8n-nodes-discord-dm",
@@ -24,7 +24,7 @@
     "release": "n8n-node release",
     "prepublishOnly": "n8n-node prerelease"
   },
-  "packageManager": "pnpm@12.6.0",
+  "packageManager": "pnpm@12.10.1",
   "publishConfig": {
     "access": "public"
   },

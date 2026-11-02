@@ -11,6 +11,7 @@ import {
   ComponentType,
   GatewayIntentBits,
   MessageFlags,
+  claimPendingReply,
   createDiscordActionClient,
   toN8nData,
 } from '../DiscordClient';
@@ -287,6 +288,7 @@ export class DiscordSendDirectMessage implements INodeType
             const rejectCustomId = `n8n-hitl-${randomUUID()}-reject`;
             let promptMessageChannelId = '';
             let timeout: NodeJS.Timeout | undefined;
+            let releasePendingReply: (() => void) | undefined;
 
             let resolveResponse!: (response: DiscordHumanResponse) => void;
             let rejectResponse!: (error: Error) => void;
@@ -379,7 +381,11 @@ export class DiscordSendDirectMessage implements INodeType
                   content: message,
                   ...(files.length > 0 && { files }),
                 });
-                promptMessageChannelId = sentMessage.channelId;
+              promptMessageChannelId = sentMessage.channelId;
+              if (responseType === 'text')
+              {
+                releasePendingReply = claimPendingReply(userId, promptMessageChannelId);
+              }
               const timeoutPromise = new Promise<never>((_resolve, reject) =>
               {
                 // eslint-disable-next-line @n8n/community-nodes/no-restricted-globals -- n8n-workflow timer helpers are not exported by all supported n8n versions.
@@ -412,6 +418,7 @@ export class DiscordSendDirectMessage implements INodeType
                 // eslint-disable-next-line @n8n/community-nodes/no-restricted-globals -- Clear the native timeout when the user has already responded.
                 clearTimeout(timeout);
               }
+              releasePendingReply?.();
               client.removeListener('messageCreate', messageListener);
               client.removeListener('interactionCreate', interactionListener);
               client.removeListener('error', clientErrorListener);

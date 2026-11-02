@@ -122,3 +122,35 @@ export const createDiscordActionClient = async (
     destroy: () => client.destroy(),
   };
 };
+
+const PENDING_REPLIES_KEY = Symbol.for('n8n-nodes-discord-dm.pendingReplies');
+type PendingRepliesStore = Map<string, number>;
+const getPendingReplies = (): PendingRepliesStore =>
+{
+  const store = globalThis as unknown as Record<symbol, PendingRepliesStore | undefined>;
+  return (store[PENDING_REPLIES_KEY] ??= new Map<string, number>());
+};
+
+// Marks a user/channel as awaiting a reply from a "Send and Wait" node so triggers ignore it.
+export const claimPendingReply = (userId: string, channelId: string): (() => void) =>
+{
+  const key = `${userId}:${channelId}`;
+  const pending = getPendingReplies();
+  pending.set(key, (pending.get(key) ?? 0) + 1);
+  return () =>
+  {
+    const count = (pending.get(key) ?? 1) - 1;
+    if (count <= 0)
+    {
+      pending.delete(key);
+    } else
+    {
+      pending.set(key, count);
+    }
+  };
+};
+
+export const isPendingReply = (userId: string, channelId: string): boolean =>
+  getPendingReplies().has(`${userId}:${channelId}`);
+
+export const isWaitComponentId = (customId: string): boolean => customId.startsWith('n8n-hitl-');

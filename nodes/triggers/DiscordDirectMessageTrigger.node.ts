@@ -1,5 +1,6 @@
 import type { INodeType, INodeTypeDescription, ITriggerFunctions } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
+import { isPendingReply } from '../DiscordClient';
 import { createDiscordTrigger, DISCORD_INTENTS, toN8nData } from '../DiscordGateway';
 
 export class DiscordDirectMessageTrigger implements INodeType
@@ -40,6 +41,11 @@ export class DiscordDirectMessageTrigger implements INodeType
         }
 
         if (message.author.bot)
+        {
+          return;
+        }
+
+        if (isPendingReply(message.author.id, message.channelId))
         {
           return;
         }

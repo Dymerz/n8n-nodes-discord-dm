@@ -1,5 +1,5 @@
-# Publishes this n8n community node package to npm when changes are pushed to
-# main. Pull requests targeting main start the workflow but never publish.
+# Runs CI on pull requests and pushes, and publishes this n8n community node
+# package to npm only when changes are pushed to main.
 #
 # Starting May 1 2026, n8n requires all community nodes to be published via
 # GitHub Actions with npm provenance statements. This workflow satisfies that
@@ -47,7 +47,7 @@
 # This will lint, build, prompt for a version bump, update the changelog,
 # commit, tag, and push — which triggers this workflow to publish to npm.
 
-name: Publish
+name: CI and Publish
 
 on:
   workflow_dispatch:
@@ -55,13 +55,42 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: ci-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: "pnpm install --frozen-lockfile"
+
+      - name: Run lint
+        run: "pnpm lint"
+
+      - name: Run build
+        run: "pnpm build"
+
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
+    needs: ci
 
     permissions:
       # Required to mint an OIDC token for npm provenance attestation.

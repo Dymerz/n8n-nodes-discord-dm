@@ -123,13 +123,9 @@ export const createDiscordActionClient = async (
   };
 };
 
-const PENDING_REPLIES_KEY = Symbol.for('n8n-nodes-discord-dm.pendingReplies');
-type PendingRepliesStore = Map<string, number>;
-const getPendingReplies = (): PendingRepliesStore =>
-{
-  const store = globalThis as unknown as Record<symbol, PendingRepliesStore | undefined>;
-  return (store[PENDING_REPLIES_KEY] ??= new Map<string, number>());
-};
+// Module-level state is shared because this file is bundled once and imported externally by every node.
+const pendingRepliesStore = new Map<string, number>();
+const getPendingReplies = (): Map<string, number> => pendingRepliesStore;
 
 // Marks a user/channel as awaiting a reply from a "Send and Wait" node so triggers ignore it.
 export const claimPendingReply = (userId: string, channelId: string): (() => void) =>

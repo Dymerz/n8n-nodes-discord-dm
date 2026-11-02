@@ -1,9 +1,52 @@
-import { Client, GatewayIntentBits, Partials, type ClientEvents } from 'discord.js';
+import {
+  ButtonStyle,
+  Client,
+  ComponentType,
+  GatewayIntentBits,
+  MessageFlags,
+  Partials,
+  SeparatorSpacingSize,
+  type APIActionRowComponent,
+  type APIButtonComponent,
+  type APIChannelSelectComponent,
+  type APIComponentInContainer,
+  type APIContainerComponent,
+  type APIFileComponent,
+  type APIMediaGalleryComponent,
+  type APIMentionableSelectComponent,
+  type APIMessageTopLevelComponent,
+  type APIRoleSelectComponent,
+  type APISectionComponent,
+  type APISeparatorComponent,
+  type APIStringSelectComponent,
+  type APITextDisplayComponent,
+  type APIThumbnailComponent,
+  type APIUserSelectComponent,
+  type ClientEvents,
+} from 'discord.js';
 import type { IDataObject, IExecuteFunctions, ITriggerFunctions } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
 // Re-exported so other modules never import discord.js directly and bundle it again.
-export { GatewayIntentBits, Partials };
+export { ButtonStyle, ComponentType, GatewayIntentBits, MessageFlags, Partials, SeparatorSpacingSize };
+export type {
+  APIActionRowComponent,
+  APIButtonComponent,
+  APIChannelSelectComponent,
+  APIComponentInContainer,
+  APIContainerComponent,
+  APIFileComponent,
+  APIMediaGalleryComponent,
+  APIMentionableSelectComponent,
+  APIMessageTopLevelComponent,
+  APIRoleSelectComponent,
+  APISectionComponent,
+  APISeparatorComponent,
+  APIStringSelectComponent,
+  APITextDisplayComponent,
+  APIThumbnailComponent,
+  APIUserSelectComponent,
+};
 export type DiscordEventName = keyof ClientEvents;
 export type DiscordEventListener<TEventName extends DiscordEventName> =
   (...args: ClientEvents[TEventName]) => void;
@@ -57,10 +100,11 @@ export interface DiscordActionClient
 /** Creates a client that only logs in on the first `ready()` call. */
 export const createDiscordActionClient = async (
   context: IExecuteFunctions,
+  intents: GatewayIntentBits[] = [],
 ): Promise<DiscordActionClient> =>
 {
   const token = await getBotToken(context);
-  const client = createDiscordClient();
+  const client = createDiscordClient({ intents });
   client.on('error', (error) =>
   {
     context.logger.error('Discord client error', { error: error.message });

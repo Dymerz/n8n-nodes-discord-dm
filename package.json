@@ -41,7 +41,9 @@
     ],
     "nodes": [
       "dist/nodes/actions/DiscordSendDirectMessage.node.js",
+      "dist/nodes/actions/DiscordRespondToComponentInteraction.node.js",
       "dist/nodes/triggers/DiscordDirectMessageTrigger.node.js",
+      "dist/nodes/triggers/DiscordComponentInteractionTrigger.node.js",
       "dist/nodes/triggers/DiscordReactionAddedTrigger.node.js",
       "dist/nodes/triggers/DiscordReactionRemovedTrigger.node.js"
     ]

@@ -20,6 +20,7 @@ export const DISCORD_INTENTS = {
   DIRECT_MESSAGES: GatewayIntentBits.DirectMessages,
   DIRECT_MESSAGE_REACTIONS: GatewayIntentBits.DirectMessageReactions,
   GUILD_MESSAGE_REACTIONS: GatewayIntentBits.GuildMessageReactions,
+  GUILDS: GatewayIntentBits.Guilds,
 } as const;
 
 type EventListener<TEventName extends DiscordEventName> = DiscordEventListener<TEventName>;

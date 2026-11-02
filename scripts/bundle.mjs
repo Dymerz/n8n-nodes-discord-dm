@@ -7,9 +7,10 @@ const packageJson = JSON.parse(
 const entries = packageJson.n8n.nodes;
 const sharedModules = [
   { source: 'nodes/DiscordClient.ts', outfile: 'dist/nodes/DiscordClient.js', external: [] },
+  { source: 'nodes/DiscordComponents.ts', outfile: 'dist/nodes/DiscordComponents.js', external: ['./DiscordClient'] },
   { source: 'nodes/DiscordGateway.ts', outfile: 'dist/nodes/DiscordGateway.js', external: ['./DiscordClient'] },
 ];
-const sharedExternals = ['*/DiscordGateway', '*/DiscordClient'];
+const sharedExternals = ['*/DiscordComponents', '*/DiscordGateway', '*/DiscordClient'];
 
 await Promise.all(
   entries.map(async (entry) =>

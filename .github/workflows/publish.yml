@@ -134,23 +134,23 @@ jobs:
             exit 1
           fi
 
-          major="${BASH_REMATCH[1]}"
-          minor="${BASH_REMATCH[2]}"
-          current_patch="${BASH_REMATCH[3]}"
-          tag_pattern="${prefix}${major}.${minor}.*"
-          matching_tag=$(git tag --list "$tag_pattern" --sort=-v:refname | head -n 1)
+          # Use the highest semver tag overall, so package.json's version
+          # (which is not committed back) never resets the count.
+          latest_tag=$(git tag --list "${prefix}[0-9]*.[0-9]*.[0-9]*" --sort=-v:refname | head -n 1)
 
-          if [[ -n "$matching_tag" ]]; then
-            version_without_prefix="${matching_tag#"$prefix"}"
-            IFS='.' read -r _ _ patch <<< "$version_without_prefix"
-            if [[ ! "$patch" =~ ^[0-9]+$ ]]; then
-              echo "::error::Latest matching tag is not a semantic version: $matching_tag"
+          if [[ -n "$latest_tag" ]]; then
+            if [[ ! "${latest_tag#"$prefix"}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+              echo "::error::Latest tag is not a semantic version: $latest_tag"
               exit 1
             fi
-            new_patch=$((patch + 1))
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            new_patch=$((BASH_REMATCH[3] + 1))
           else
             # Bootstrap from package.json when the repository has no tags yet.
-            new_patch=$((current_patch + 1))
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            new_patch=$((BASH_REMATCH[3] + 1))
           fi
 
           version_without_prefix="$major.$minor.$new_patch"
